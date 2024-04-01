@@ -21,12 +21,14 @@ public class Compte {
         this.nom = n ;
         this.prenom = p ;
         this.mail = mail ;
-        this.mdp = null ;
+        this.mdp = "" ;
     }
 
 
     public Compte(String n, String p, String mail, String mdp) {
-        this(n, p, mail) ;
+        this.nom = n ;
+        this.prenom = p ;
+        this.mail = mail ;
         this.mdp = mdp ;
     }
 

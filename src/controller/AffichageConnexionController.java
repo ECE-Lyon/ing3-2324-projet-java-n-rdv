@@ -1,5 +1,7 @@
 package controller;
 
+import model.Client;
+import model.Compte;
 import model.Session;
 import dao.* ;
 
@@ -20,5 +22,10 @@ public class AffichageConnexionController {
         session.updatePageDeConnexion(comptedao.connexion(this.session, email, mdp)) ;
     }
 
+    public void creerClient(Connection connections, Compte compte) throws SQLException {
+        ClientDao dao = new ClientDaoImpl(connections) ;
+        System.out.println(compte.getMdp());
+        dao.addClient(new Client(-1, compte));
+    }
 
 }

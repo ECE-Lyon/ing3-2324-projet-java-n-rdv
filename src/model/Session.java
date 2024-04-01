@@ -7,7 +7,10 @@ import java.util.Observable;
 /** Pour avoir accès à la personne actuellement connecté ainsi que ces informations
  * A chaque déconnexion, changer la session
  * A chaque connexion, activé une session
+ *
+ * Ajouter un ID client/medecin en variable, pour pouvoir appeler si jamais le client/medecin en question dans la bdd
   */
+
 
 public class Session extends Observable {
 
