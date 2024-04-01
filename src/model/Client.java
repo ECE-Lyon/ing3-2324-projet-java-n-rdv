@@ -18,8 +18,8 @@ public class Client extends Compte {
         this.idClient = id ;
     }
 
-    public Client(int id, String nom, String prenom, String mail){
-        super(nom, prenom, mail) ;
+    public Client(int id, String nom, String prenom, String mail, String mdp){
+        super(nom, prenom, mail, mdp) ;
         this.idClient = id ;
     }
 
