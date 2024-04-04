@@ -26,8 +26,9 @@ public class ClientDaoImpl implements ClientDao {
 
     @Override
     public Client getClient(int id) throws SQLException {
-        try(Statement statement = connection.createStatement()){
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM clients where idClient =" + id);
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM clients where idClient = ?")){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 int i = resultSet.getInt(1);
                 String nom = resultSet.getString("nom");
@@ -42,11 +43,12 @@ public class ClientDaoImpl implements ClientDao {
 
     @Override
     public void deleteClient(int id) throws SQLException{
-        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM clients where idClient ="+ id)) {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM clients where idClient = ?")) {
+            preparedStatement.setInt(1, id);
             preparedStatement.execute();
         }
     }
-
+    @Override
     public void updateClient (Client client) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE clients SET idClient = ?, nom = ?, prenom = ?," +
                 "mail = ?, mdp = ?")){

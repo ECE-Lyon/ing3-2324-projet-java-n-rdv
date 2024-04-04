@@ -4,13 +4,13 @@ import model.Clinique;
 
 import java.sql.*;
 
-public class CliniqueDaoImpl {
+public class CliniqueDaoImpl implements CliniqueDao{
     private Connection connection;
 
     public CliniqueDaoImpl(Connection connection) {
         this.connection = connection;
     }
-
+    @Override
     public void addClinique (Clinique newClinique) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cliniques(nom, localisation) " +
                 "VALUES (?, ?)")){
@@ -19,10 +19,11 @@ public class CliniqueDaoImpl {
             preparedStatement.execute();
         }
     }
-
+    @Override
     public Clinique getClinique(int id) throws SQLException {
-        try(Statement statement = connection.createStatement()){
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM cliniques where idClinique =" + id);
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM cliniques where idClinique = ?")){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 int i = resultSet.getInt(1);
                 String nom = resultSet.getString("nom");
@@ -32,13 +33,14 @@ public class CliniqueDaoImpl {
             return null;
         }
     }
-
+    @Override
     public void deleteClinique(int id) throws SQLException{
-        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM cliniques where idClient ="+ id)) {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM cliniques where idClient = ?")){
+            preparedStatement.setInt(1, id);
             preparedStatement.execute();
         }
     }
-
+    @Override
     public void updateClinique (Clinique clinique) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE cliniques SET idClinique = ?, nom = ?, localisation = ?")){
             preparedStatement.setInt(1,clinique.getIdClinique());

@@ -7,6 +7,7 @@ public class Medecin {
     private String mail;
     private String mdp;
     private String specification;
+
     public Medecin (int idMedecin, String nom, String prenom, String mail, String mdp, String specification){
         this.idMedecin = idMedecin;
         this.nom = nom;

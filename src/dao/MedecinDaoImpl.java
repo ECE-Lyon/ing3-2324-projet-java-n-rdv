@@ -3,12 +3,13 @@ import model.Clinique;
 import model.Medecin;
 
 import java.sql.*;
-public class MedecinDaoImpl {
+public class MedecinDaoImpl implements MedecinDao{
     private Connection connection;
     public MedecinDaoImpl(Connection connection) {
         this.connection = connection;
     }
 
+    @Override
     public void addMedecin(Medecin newMedecin) throws SQLException {
         //Est ce qu'on stocke le mdp à chaque fois dans la classe ??? Est ce que c'est nécessaire
         try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO medecins(nom, prenom, mail, mdp, specification)" +
@@ -21,9 +22,11 @@ public class MedecinDaoImpl {
             preparedStatement.execute();
         }
     }
+    @Override
     public Medecin getMedecin(int id) throws SQLException {
-        try(Statement statement = connection.createStatement()){
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM medecins where idMedecin =" + id);
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM medecins where idMedecin = ?")){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 int i = resultSet.getInt(1);
                 String nom = resultSet.getString("nom");
@@ -36,11 +39,14 @@ public class MedecinDaoImpl {
             return null;
         }
     }
+    @Override
     public void deleteMedecin(int id) throws SQLException{
-        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM medecins where idMedecin ="+ id)) {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM medecins where idMedecin = ?")) {
+            preparedStatement.setInt(1, id);
             preparedStatement.execute();
         }
     }
+    @Override
     public void updateMedecin (Medecin medecin) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE medecins SET idMedecin = ?, nom = ?, prenom = ?," +
                 "mail = ?, mdp = ?, specification = ?")){
