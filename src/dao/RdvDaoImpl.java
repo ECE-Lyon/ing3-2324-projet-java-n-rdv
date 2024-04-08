@@ -12,20 +12,20 @@ public class RdvDaoImpl implements RdvDao{
     private Connection connection;
     public RdvDaoImpl(Connection connection){this.connection = connection;}
     @Override
-    public void addRdv(Rdv newRdv, Medecin medecin, Client client, Clinique clinique) throws SQLException {
-        int idJointure;
+    public int getIdJointure(Rdv rdv, int idRdv) throws SQLException{
+        int idJointure = 0;
         try(PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT idJointure FROM medecin_clinique " +
                 "where idRdv = ?")){
-            preparedStatement1.setInt(1, newRdv.getIdRdv());
+            preparedStatement1.setInt(1, rdv.getIdRdv());
             ResultSet resultSet = preparedStatement1.executeQuery();
             if (resultSet.next()){
                 idJointure = resultSet.getInt(5);
             }
-            else{
-                idJointure = 0;
-            }
         }
-
+        return idJointure;
+    }
+    @Override
+    public void addRdv(Rdv newRdv, Medecin medecin, Client client, Clinique clinique, int idJointure) throws SQLException {
         try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO rdv(note, heure, idClient, idJointure)" +
                 " VALUES (?, ?, ?, ?)")) {
             preparedStatement.setString(1, newRdv.getNote());
