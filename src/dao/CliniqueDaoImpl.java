@@ -1,8 +1,12 @@
 package dao;
 
 import model.Clinique;
+import model.Compte;
+import model.Session;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CliniqueDaoImpl implements CliniqueDao{
     private Connection connection;
@@ -33,6 +37,34 @@ public class CliniqueDaoImpl implements CliniqueDao{
             return null;
         }
     }
+
+    @Override
+    public List<Clinique> getAllClinique() throws SQLException {
+        List<Clinique> list = new ArrayList<>() ;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM cliniques")){
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()){
+                    Clinique clinique = new Clinique(result.getInt("idClinique"),  result.getString("nom"), result.getString("localisation")) ;
+                    list.add(clinique) ;
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<String> getAllCliniquev2() throws SQLException {
+        List<String> list = new ArrayList<>( ) ;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT nom FROM cliniques")){
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()){
+                    list.add(result.getString("nom")) ;
+                }
+            }
+        }
+        return list;
+    }
+
     @Override
     public void deleteClinique(int id) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM cliniques where idClient = ?")){
@@ -49,6 +81,7 @@ public class CliniqueDaoImpl implements CliniqueDao{
             preparedStatement.execute();
         }
     }
+
 
 
 }

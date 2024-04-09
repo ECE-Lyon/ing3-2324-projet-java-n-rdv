@@ -1,13 +1,19 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Clinique {
     private int idClinique;
     private String localisation;
     private String nom;
+    private List<Medecin> quelMedecins ;
+
     public Clinique(int idClinique, String nom, String localisation){
         this.idClinique = idClinique;
         this.nom = nom;
         this.localisation = localisation;
+        this.quelMedecins = new ArrayList<>();
     }
 
     public int getIdClinique() {

@@ -1,5 +1,9 @@
 package model;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Medecin {
     private int idMedecin;
     private String nom;
@@ -7,6 +11,10 @@ public class Medecin {
     private String mail;
     private String mdp;
     private String specification;
+    private String qualification;
+
+    private List<Clinique> quelClinique ;
+
 
     public Medecin (int idMedecin, String nom, String prenom, String mail, String mdp, String specification){
         this.idMedecin = idMedecin;
@@ -15,6 +23,8 @@ public class Medecin {
         this.mail = mail;
         this.mdp = mdp;
         this.specification = specification;
+        this.qualification = "Podologue" ;
+        this.quelClinique = new ArrayList<>();
     }
     public int getIdMedecin() {
         return idMedecin;

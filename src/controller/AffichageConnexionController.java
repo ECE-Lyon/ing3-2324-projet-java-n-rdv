@@ -24,7 +24,6 @@ public class AffichageConnexionController {
 
     public void creerClient(Connection connections, Compte compte) throws SQLException {
         ClientDao dao = new ClientDaoImpl(connections) ;
-        System.out.println(compte.getMdp());
         dao.addClient(new Client(-1, compte));
     }
 

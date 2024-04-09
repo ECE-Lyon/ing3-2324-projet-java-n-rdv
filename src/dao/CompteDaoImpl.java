@@ -23,7 +23,7 @@ public class CompteDaoImpl implements CompteDao {
                 while(result.next()){
                     if(result.getString("mail").equals(login) && result.getString("mdp").equals(mdp)){
                         Compte compte = new Compte(result.getString("nom"),  result.getString("prenom"), result.getString("mail"), result.getString("mdp")) ;
-                        s.setConnexionActuelle(compte, Session.TypeCompte.CLIENT);
+                        s.setConnexionActuelle(compte, Session.TypeCompte.CLIENT, result.getInt("idClient"));
                         return true ;
                     }
                 }
@@ -35,7 +35,7 @@ public class CompteDaoImpl implements CompteDao {
                 while(result.next()){
                     if(result.getString("mail").equals(login) && result.getString("mdp").equals(mdp)){
                         Compte compte = new Compte(result.getString("nom"),  result.getString("prenom"), result.getString("mail"), result.getString("mdp")) ;
-                        s.setConnexionActuelle(compte, Session.TypeCompte.MEDECIN);
+                        s.setConnexionActuelle(compte, Session.TypeCompte.MEDECIN, result.getInt("idMedecin"));
                         return true ;
                     }
                 }

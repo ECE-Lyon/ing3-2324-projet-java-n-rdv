@@ -11,7 +11,6 @@ public class MedecinDaoImpl implements MedecinDao{
 
     @Override
     public void addMedecin(Medecin newMedecin) throws SQLException {
-        //Est ce qu'on stocke le mdp à chaque fois dans la classe ??? Est ce que c'est nécessaire
         try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO medecins(nom, prenom, mail, mdp, specification)" +
                 " VALUES (?, ?, ?, ?, ?)")) {
             preparedStatement.setString(1, newMedecin.getNom());
@@ -48,9 +47,8 @@ public class MedecinDaoImpl implements MedecinDao{
     }
     @Override
     public void updateMedecin (Medecin medecin) throws SQLException{
-        try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE medecins SET idMedecin = ?, nom = ?, prenom = ?," +
+        try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE medecins SET nom = ?, prenom = ?," +
                 "mail = ?, mdp = ?, specification = ?")){
-            preparedStatement.setInt(1,medecin.getIdMedecin());
             preparedStatement.setString(2, medecin.getNom());
             preparedStatement.setString(3,medecin.getPrenom());
             preparedStatement.setString(4,medecin.getMail());

@@ -50,9 +50,8 @@ public class ClientDaoImpl implements ClientDao {
     }
     @Override
     public void updateClient (Client client) throws SQLException{
-        try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE clients SET idClient = ?, nom = ?, prenom = ?," +
+        try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE clients SET nom = ?, prenom = ?," +
                 "mail = ?, mdp = ?")){
-            preparedStatement.setInt(1,client.getIdClient());
             preparedStatement.setString(2, client.getNom());
             preparedStatement.setString(3,client.getPrenom());
             preparedStatement.setString(4, client.getMail());

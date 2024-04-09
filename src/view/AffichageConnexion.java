@@ -56,11 +56,9 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
         this.setLayout(new BorderLayout(0, 50));
         titre.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 
-        //Panel NORTH
-
+        //Ajout des composants dans la fenêtre
         this.add(createNorth(mdpIncorrecte), BorderLayout.NORTH) ;
         this.add(createCenter(), BorderLayout.CENTER) ;
-
         JPanel panelBoutton = new JPanel(new FlowLayout()) ;
         panelBoutton.add(boutton) ;
         this.add(panelBoutton, BorderLayout.SOUTH) ;
@@ -97,9 +95,7 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
 
         return  panel ;
     }
-
-
-
+    
     public void creerCompte() {
         JDialog popUp = new JDialog(this, "Création de commte", true) ;
         popUp.setLayout(new GridLayout(5, 1, 0, 30));
