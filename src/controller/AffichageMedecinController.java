@@ -1,9 +1,9 @@
 package controller;
 
-import dao.CliniqueDao;
-import dao.CliniqueDaoImpl;
+import dao.*;
 import model.Clinique;
 import model.Medecin;
+import model.Rdv;
 import model.Session;
 
 import java.sql.Connection;
@@ -14,9 +14,10 @@ import java.util.List;
 public class AffichageMedecinController {
 
     private Medecin medecin ;
-
-    public AffichageMedecinController(){
-
+    private Session session;
+    private String specialisation;
+    public AffichageMedecinController(Session s){
+        this.session = s ;
     }
 
     public List<String> getAllClinique(Connection connection) throws SQLException {
@@ -25,6 +26,8 @@ public class AffichageMedecinController {
         return list= dao.getAllCliniquev2() ;
     }
 
-
-
+    public String getSpeMedecin(Connection connection) throws SQLException{
+        MedecinDao dao = new MedecinDaoImpl(connection);
+        return specialisation = dao.getSpeMedecin(session.getId());
+    }
 }

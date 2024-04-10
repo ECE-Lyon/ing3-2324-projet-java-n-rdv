@@ -18,6 +18,7 @@ public class Session extends Observable {
 
     private Compte connecte ;
     private TypeCompte typeCompte ;
+
     private int id ;
 
 
@@ -46,4 +47,11 @@ public class Session extends Observable {
         notifyObservers(result);
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

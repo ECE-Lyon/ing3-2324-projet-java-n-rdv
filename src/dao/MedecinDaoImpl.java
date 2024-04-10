@@ -39,6 +39,17 @@ public class MedecinDaoImpl implements MedecinDao{
         }
     }
     @Override
+    public String getSpeMedecin(int id) throws SQLException {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT specification FROM medecins where idMedecin = ?")){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                return resultSet.getString("specification");
+            }
+            return null;
+        }
+    }
+    @Override
     public void deleteMedecin(int id) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM medecins where idMedecin = ?")) {
             preparedStatement.setInt(1, id);

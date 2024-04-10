@@ -21,10 +21,10 @@ public class Main {
         boolean run = true ;
 
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "")) {
             //Creation des controller
             AffichageConnexionController connexionController = new AffichageConnexionController(session) ;
-            AffichageMedecinController medecinController = new AffichageMedecinController() ;
+            AffichageMedecinController medecinController = new AffichageMedecinController(session) ;
 
             //Ouvrir la fenêtre de connexion
            AffichageConnexion affichagePrinciapel = new AffichageConnexion(connection, connexionController) ;
@@ -40,7 +40,8 @@ public class Main {
                }
                else if(session.getTypeConnexion().equals(Session.TypeCompte.MEDECIN)) {
                    //Medecin medecin = new Medecin() ;
-                   AffichageMedecin medecin = new AffichageMedecin(medecinController) ;
+                   //AffichageMedecin medecin = new AffichageMedecin(medecinController) ;
+                   PageMedecin medecin = new PageMedecin(medecinController);
                    medecin.main(args, medecinController) ;
                    run = false ;
 

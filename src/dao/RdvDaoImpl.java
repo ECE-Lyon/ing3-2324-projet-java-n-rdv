@@ -36,15 +36,16 @@ public class RdvDaoImpl implements RdvDao{
         }
     }
     @Override
-    public Rdv getRdv(int id) throws SQLException {
-        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rdv where idRdv = ?")){
-            preparedStatement.setInt(1, id);
+    public Rdv getRdv(String etat) throws SQLException {
+        // je récupère l'idJointure pour avoir la clinique du rdv et je récupère l'heure aussi
+        // je trie par l'état de du rdv aussi que j'ai rajouté dans la bdd
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT (idJointure, heure) FROM rdv where Etat = ?")){
+            preparedStatement.setString(1, etat);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
-                int i = resultSet.getInt(1);
-                String note = resultSet.getString("note");
+                int i = resultSet.getInt(5);
                 Date date = resultSet.getDate("heure");
-                return new Rdv(i, note, date);
+                return new Rdv(i, date);
             }
             return null;
         }

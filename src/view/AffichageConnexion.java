@@ -141,7 +141,7 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
+        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "")) {
             if(e.getSource().equals(boutton)) {
                 try {
                     this.controller.entrerConnexion(newConnection, entrerMail.getText(), entrerMdp.getText());

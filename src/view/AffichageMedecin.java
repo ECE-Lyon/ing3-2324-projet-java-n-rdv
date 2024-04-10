@@ -55,7 +55,7 @@ public class AffichageMedecin implements ActionListener {
         this.ajoutezRendezVousButton.addActionListener(this);
 
 
-        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
+        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "")) {
             List<String> list = new ArrayList<>() ;
             list = this.controller.getAllClinique(newConnection) ;
             for(int i = 0 ; i < list.size() ; i++){

@@ -8,7 +8,10 @@ public class Rdv {
     private LocalDateTime dateHeure;
     private Date date;
     private String note;
+    private String etatRdv;
+
     private int idRdv;
+    private int idJointure;
     public Rdv(int idRdv, String note, LocalDateTime dateHeure){
         this.idRdv = idRdv;
         this.note = note;
@@ -19,10 +22,13 @@ public class Rdv {
         this.note = note;
         this.date = date;
     }
+    public Rdv(int idJointure,Date date){
+        this.idJointure = idJointure;
+        this.date = date;
+    }
     public int getIdRdv() {
         return idRdv;
     }
-
     public void setIdRdv(int idRdv) {
         this.idRdv = idRdv;
     }
