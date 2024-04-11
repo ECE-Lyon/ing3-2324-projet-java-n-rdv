@@ -47,8 +47,10 @@ public class AffichageMedecinController {
 
     public boolean addMedecin(Connection connection, Medecin med, List<String> list) throws SQLException{
         MedecinDao dao = new MedecinDaoImpl(connection) ;
+
         dao.addMedecin(med);
 
+        //mettre le bonne id pour l'inserer dans la jointure medecin_clinique
         med.setIdMedecin(dao.getIdMedecin(med.getMail(), med.getNom(), med.getPrenom()));
 
         CliniqueDao daoClini = new CliniqueDaoImpl(connection) ;

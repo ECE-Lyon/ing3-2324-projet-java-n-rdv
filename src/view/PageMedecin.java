@@ -56,6 +56,7 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JFormattedTextField prenomMed;
     private JFormattedTextField mailMed;
     private JPanel southPanel;
+    private JLabel resultatAjout;
 
     public PageMedecin(AffichageMedecinController control)  {
         super("Page Médecin") ;
@@ -131,13 +132,23 @@ public class PageMedecin extends JFrame implements ActionListener {
             addComboBoxAjouterClinique();
         }
         else if (e.getSource().equals(this.validerAjouterMedecin)) {
-            /*try {
-                addMedecin() ;
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }*/
+            if (!cutString(speMed.getText()).isEmpty() && !cutString(nomMed.getText()).isEmpty() && !cutString(prenomMed.getText()).isEmpty() && !cutString(mailMed.getText()).isEmpty() && !cutString(mdpMed.getText()).isEmpty()) {
+                try {
+                    addMedecin();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            else {
+                this.resultatAjout.setText("Veuillez remplir les cases !");
+            }
         }
     }
+
+    public String cutString(String mot){
+        return mot.replace(" ", "") ;
+    }
+
 
     public void addComboBoxAjouterClinique(){
         JComboBox comboBox3 = new JComboBox() ;
@@ -162,8 +173,7 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
         try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
             if(this.controller.addMedecin(newConnection, new Medecin(-999, speMed.getText(), nomMed.getText(), prenomMed.getText(), mailMed.getText(), mdpMed.getText()), cliniques)){
-                /** ICI METTRE LE TEXTE "SUCCESSFUL" ou "CREATION DE COMPTE REUSSI" QUAND ON APPUIE SUR LE BOUTTON
-                  LE PROBLEME, C'ETAIT QUIL FAUT APPUYER A L'ECRAN POUR VOIR LES CHANGEMENTS**/
+                this.resultatAjout.setText("Medecin ajouté avec succès !");
             }
         }
     }
