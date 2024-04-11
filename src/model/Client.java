@@ -7,7 +7,6 @@ public class Client extends Compte {
 
     private int idClient ;
 
-    //Compte test pour nous (c-a-d pas besoin d'avoir ni mdp ni mail pour se connecter (pour les phases de test))
     public Client(){
         super() ;
         this.idClient = -1 ;

@@ -39,13 +39,16 @@ public class CliniqueDaoImpl implements CliniqueDao{
     }
 
     @Override
-    public List<Clinique> getAllClinique() throws SQLException {
+    public List<Clinique> getAllClinique(List<String> cliniques) throws SQLException {
         List<Clinique> list = new ArrayList<>() ;
-        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM cliniques")){
-            try(ResultSet result = preparedStatement.executeQuery()) {
-                while(result.next()){
-                    Clinique clinique = new Clinique(result.getInt("idClinique"),  result.getString("nom"), result.getString("localisation")) ;
-                    list.add(clinique) ;
+        for(int i = 0 ; i < cliniques.size() ; i++) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM cliniques WHERE nom = ?")) {
+                preparedStatement.setString(1, cliniques.get(i));
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    while (result.next()) {
+                        Clinique clinique = new Clinique(result.getInt("idClinique"), result.getString("nom"), result.getString("localisation"));
+                        list.add(clinique);
+                    }
                 }
             }
         }

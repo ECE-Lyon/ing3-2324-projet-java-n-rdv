@@ -2,7 +2,7 @@ package model;
 
 import java.util.Observable;
 
-public class Compte {
+public class Compte extends Observable {
     protected String nom ;
     protected String prenom ;
     protected String mail ;
