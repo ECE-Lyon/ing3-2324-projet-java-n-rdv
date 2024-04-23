@@ -75,22 +75,41 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
     }
 
     public JPanel createCenter() {
-        JPanel panel = new JPanel(new GridLayout(3, 1)) ;
-        JPanel panel1 = new JPanel(new FlowLayout()) ;
-        JPanel panel2 = new JPanel(new FlowLayout()) ;
-        JPanel panel3 = new JPanel(new FlowLayout()) ;
+        JPanel panel = new JPanel(new GridLayout(3, 1));
+        JPanel panel1 = new JPanel(new FlowLayout());
+        JPanel panel2 = new JPanel(new FlowLayout());
+        JPanel panel3 = new JPanel(new FlowLayout());
 
-        panel1.add(new JLabel("E-mail :")) ;
-        panel1.add(entrerMail) ;
-        panel2.add(new JLabel("Password :")) ;
-        panel2.add(entrerMdp) ;
-        panel3.add(pasDeCompteBoutton) ;
-        panel.add(panel1) ;
-        panel.add(panel2) ;
-        panel.add(panel3) ;
+        panel1.add(new JLabel("E-mail :"));
+        panel1.add(entrerMail);
 
-        return  panel ;
+        panel2.add(new JLabel("Password :"));
+        JPasswordField entrerMdp = new JPasswordField(45); // Utilisation de JPasswordField
+        panel2.add(entrerMdp);
+
+        // Bouton pour démasquer le mot de passe
+        JButton showPasswordButton = new JButton("Afficher");
+        showPasswordButton.addActionListener(e -> {
+            if (entrerMdp.getEchoChar() == '*') {
+                entrerMdp.setEchoChar((char) 0); // Afficher le texte brut
+                showPasswordButton.setText("Masquer");
+            } else {
+                entrerMdp.setEchoChar('*'); // Masquer le texte
+                showPasswordButton.setText("Afficher");
+            }
+        });
+        panel2.add(showPasswordButton);
+
+        panel3.add(pasDeCompteBoutton);
+
+        panel.add(panel1);
+        panel.add(panel2);
+        panel.add(panel3);
+
+        return panel;
     }
+
+
 
     public void creerCompte() {
         JDialog popUp = new JDialog(this, "Création de commte", true) ;
