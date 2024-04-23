@@ -35,17 +35,18 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JFormattedTextField formattedTextField3;
     private JFormattedTextField formattedTextField4;
     private JFormattedTextField formattedTextField5;
-    private JButton validerButton1;
-    private JButton voirDossierClientButton;
-    private JButton historiqueDuClientButton;
-    private JButton voirDossierClientButton1;
-    private JButton historiqueDuClientButton1;
+
     private JFormattedTextField mdpMed;
     private JFormattedTextField speMed;
     private JButton validerAjouterMedecin;
     private JPanel panel2;
     private JPanel JPanel4;
     private JLabel Spe;
+
+    //GESTION CLIENT
+    private JPanel gestionClient;
+    private JButton validerButton1;
+
 
     //AJOUTER MEDECIN
     private JPanel panelClinique;
@@ -62,10 +63,13 @@ public class PageMedecin extends JFrame implements ActionListener {
         super("Page Médecin") ;
         this.controller = control ;
 
-        panelClinique.setLayout(new GridLayout(0, 1));
-
         this.setContentPane(this.panel1);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.panelClinique.setLayout(new GridLayout(0, 1));
+        //VOIR L'AFFICHAGE GESTION CLIENT, AJOUTER UNE JSCROLLPANE A LA PLACE DE CE JPANEL POUR QUE LA SCROLLBAR S'AJOUTE S'IL Y A TROP DE CHOIX QUI S'AFFICHE
+        //this.gestionClient.setLayout(new GridLayout(0, 1));
+        //this.gestionClient.add(ajouterBouttonDossierClient("Durand", "Raphael", "rd@gmail.com")) ;
 
         //LES SEULS UTILES POUR L'INSTANT
         this.Libre.addActionListener(this);
@@ -75,15 +79,12 @@ public class PageMedecin extends JFrame implements ActionListener {
         //ET LUI
         this.ajouterUneAutreCliniqueButton.addActionListener(this);
         this.validerAjouterMedecin.addActionListener(this);
+        //ET LUI
+        this.validerButton1.addActionListener(this);
 
         this.comboBox1.addActionListener(this);
         this.tousLesRendezVousRadioButton.addActionListener(this);
         this.validerButton.addActionListener(this);
-        this.validerButton1.addActionListener(this);
-        this.voirDossierClientButton.addActionListener(this);
-        this.historiqueDuClientButton.addActionListener(this);
-        this.voirDossierClientButton1.addActionListener(this);
-        this.historiqueDuClientButton1.addActionListener(this);
 
 
         try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
@@ -159,6 +160,22 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
         this.panelClinique.add(comboBox3) ;
         this.panelClinique.add(tf) ;
+
+        ///Actualiser la page
+        this.panelClinique.revalidate();
+        this.panelClinique.repaint();
+    }
+
+    public JPanel ajouterBouttonDossierClient(String nom, String prenom, String mail)  {
+        JPanel panel = new JPanel() ;
+        panel.setLayout(new GridLayout(1, 5));
+        panel.setForeground(new Color(223,225,229));
+        panel.add(new JLabel(nom)) ;
+        panel.add(new JLabel(prenom)) ;
+        panel.add(new JLabel(mail)) ;
+        panel.add(new JButton("Voir dossier client")) ;
+        panel.add(new JButton("Historique du client")) ;
+        return panel ;
     }
 
     public void addMedecin() throws SQLException {

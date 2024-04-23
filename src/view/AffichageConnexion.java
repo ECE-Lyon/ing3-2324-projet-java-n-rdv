@@ -14,6 +14,7 @@ import java.util.Observer;
 import controller.AffichageConnexionController ;
 import model.Client;
 import model.Compte;
+import model.MySql;
 
 
 /** Vérifier pour  */
@@ -21,10 +22,6 @@ import model.Compte;
 public class AffichageConnexion extends JFrame implements WindowListener, ActionListener, Observer {
 
     private AffichageConnexionController controller ;
-    private Connection connection ;
-
-    private boolean connexionAccepte = false ;
-
     //Elements de la fenêtre de connexion
     private JLabel titre = new JLabel("CONNEXION", JLabel.CENTER) ;
     private JTextField entrerMail = new JTextField(50) ;
@@ -41,10 +38,9 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
     private JTextField prenom = new JTextField(50) ;
     private JButton confirmer = new JButton("Entrer") ;
 
-    public AffichageConnexion(Connection connection, AffichageConnexionController newController){
+    public AffichageConnexion(AffichageConnexionController newController){
         super("Test Projet") ;
         this.controller = newController ;
-        this.connection = connection ;
 
         //Ajout de Listeners
         this.boutton.addActionListener(this);
@@ -141,29 +137,23 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
-            if(e.getSource().equals(boutton)) {
-                try {
-                    this.controller.entrerConnexion(newConnection, entrerMail.getText(), entrerMdp.getText());
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
+        if(e.getSource().equals(boutton)) {
+            try {
+                this.controller.entrerConnexion(MySql.getConnection(), entrerMail.getText(), entrerMdp.getText());
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
-            else if(e.getSource().equals(pasDeCompteBoutton)) {
-                creerCompte();
-            }
-            else if(e.getSource().equals(confirmer)) {
-                try{
-                    this.controller.creerClient(newConnection, new Compte(nom.getText(), prenom.getText(), mail.getText(), mdp.getText()));
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-                this.popUpCopy.dispose();
-            }
-
         }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
+        else if(e.getSource().equals(pasDeCompteBoutton)) {
+            creerCompte();
+        }
+        else if(e.getSource().equals(confirmer)) {
+            try{
+                this.controller.creerClient(MySql.getConnection(), new Compte(nom.getText(), prenom.getText(), mail.getText(), mdp.getText()));
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            this.popUpCopy.dispose();
         }
     }
 
