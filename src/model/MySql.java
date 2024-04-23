@@ -11,7 +11,7 @@ public class MySql {
     private static String database = "rdv_medical" ;
     private static String driver = "com.mysql.jdbc.Driver" ;
     private static String user = "root" ;
-    private static String password = null ;
+    private static String password = "" ;
 
     private static Connection connection = null ;
 

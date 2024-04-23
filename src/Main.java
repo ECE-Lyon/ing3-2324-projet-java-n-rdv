@@ -22,9 +22,7 @@ public class Main {
         if(args[0].equals("0")){
             MySql.setPassword("root") ;
         }
-        else{
-            MySql.setPassword("") ;
-        }
+        
 
         //Creation de la session
         Session session = new Session() ;
@@ -38,48 +36,22 @@ public class Main {
         session.addObserver(affichagePrinciapel);
 
         while(run){
-            System.out.println();
+            //System.out.println();
             if(session.getTypeConnexion().equals(Session.TypeCompte.CLIENT)) {
                 /** Affichage client, c'est ici (après connexion à un compte) */
-                 Client client = new Client() ;
-                 AffichageClient affichageclient = new AffichageClient() ;
-                 run = false ;
-                 }
-                 else if(session.getTypeConnexion().equals(Session.TypeCompte.MEDECIN)) {
-                 Medecin medecin = new Medecin() ;
-                 AffichageMedecinController medecinController = new AffichageMedecinController(session, medecin) ;
-                 PageMedecin affichagemedecin = new PageMedecin(medecinController);
-                 run = false ;
+                Client client = new Client() ;
+                AffichageClient affichageclient = new AffichageClient() ;
+                run = false ;
+            }
+            else if(session.getTypeConnexion().equals(Session.TypeCompte.MEDECIN)) {
+                Medecin medecin = new Medecin() ;
+                AffichageMedecinController medecinController = new AffichageMedecinController(session, medecin) ;
+                PageMedecin affichagemedecin = new PageMedecin(medecinController);
+                run = false ;
 
-                 }
+            }
         }
 
-        /* try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
-            //Creation des controller
-           AffichageConnexionController connexionController = new AffichageConnexionController(session) ;
-
-            //Ouvrir la fenêtre de connexion
-           AffichageConnexion affichagePrinciapel = new AffichageConnexion(connection, connexionController) ;
-           session.addObserver(affichagePrinciapel);
-
-           while(run){
-               System.out.println();
-               if(session.getTypeConnexion().equals(Session.TypeCompte.CLIENT)) {
-                   /** Affichage client, c'est ici (après connexion à un compte)
-                   Client client = new Client() ;
-                   AffichageClient affichageclient = new AffichageClient() ;
-                   run = false ;
-               }
-               else if(session.getTypeConnexion().equals(Session.TypeCompte.MEDECIN)) {
-                   Medecin medecin = new Medecin() ;
-                   AffichageMedecinController medecinController = new AffichageMedecinController(session, medecin) ;
-                   PageMedecin affichagemedecin = new PageMedecin(medecinController);
-                   run = false ;
-
-               }
-           }
-
-        }*/
 
     }
 }
