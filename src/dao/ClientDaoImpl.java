@@ -2,9 +2,7 @@ package dao;
 
 import model.Client ;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class ClientDaoImpl implements ClientDao {
 
@@ -27,7 +25,38 @@ public class ClientDaoImpl implements ClientDao {
     }
 
     @Override
-    public void getClient(int id) throws SQLException {
+    public Client getClient(int id) throws SQLException {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM clients where idClient = ?")){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                int i = resultSet.getInt(1);
+                String nom = resultSet.getString("nom");
+                String prenom = resultSet.getString("prenom");
+                String mail = resultSet.getString("mail");
+                String mdp = resultSet.getString("mdp");
+                return new Client(i, nom, prenom, mail, mdp);
+            }
+            return null;
+        }
+    }
 
+    @Override
+    public void deleteClient(int id) throws SQLException{
+        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM clients where idClient = ?")) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+        }
+    }
+    @Override
+    public void updateClient (Client client) throws SQLException{
+        try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE clients SET nom = ?, prenom = ?," +
+                "mail = ?, mdp = ?")){
+            preparedStatement.setString(2, client.getNom());
+            preparedStatement.setString(3,client.getPrenom());
+            preparedStatement.setString(4, client.getMail());
+            preparedStatement.setString(5, client.getMdp());
+            preparedStatement.execute();
+        }
     }
 }

@@ -87,7 +87,7 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.validerButton.addActionListener(this);
 
 
-        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
+        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "")) {
             this.controller.getMedecin(newConnection) ;
 
             //affiche la spé du medecin
@@ -188,7 +188,7 @@ public class PageMedecin extends JFrame implements ActionListener {
                 cliniques.add(nomClinique) ;
             }
         }
-        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "root")) {
+        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "")) {
             if(this.controller.addMedecin(newConnection, new Medecin(-999, speMed.getText(), nomMed.getText(), prenomMed.getText(), mailMed.getText(), mdpMed.getText()), cliniques)){
                 this.resultatAjout.setText("Medecin ajouté avec succès !");
             }
