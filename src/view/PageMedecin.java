@@ -1,9 +1,13 @@
 package view;
 
 import controller.AffichageMedecinController;
+import model.Client;
 import model.Medecin;
+import model.MySql;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,8 +16,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 public class PageMedecin extends JFrame implements ActionListener {
     private AffichageMedecinController controller;
@@ -32,9 +34,7 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JFormattedTextField formattedTextField1;
     private JFormattedTextField formattedTextField2;
     private JButton validerButton;
-    private JFormattedTextField formattedTextField3;
-    private JFormattedTextField formattedTextField4;
-    private JFormattedTextField formattedTextField5;
+
 
     private JFormattedTextField mdpMed;
     private JFormattedTextField speMed;
@@ -46,7 +46,10 @@ public class PageMedecin extends JFrame implements ActionListener {
     //GESTION CLIENT
     private JPanel gestionClient;
     private JButton validerButton1;
-
+    private JPanel scrollPanel;
+    private JFormattedTextField nomGestionClient;
+    private JFormattedTextField prenomGestionClient;
+    private JFormattedTextField mailGestionClient;
 
     //AJOUTER MEDECIN
     private JPanel panelClinique;
@@ -62,24 +65,20 @@ public class PageMedecin extends JFrame implements ActionListener {
     public PageMedecin(AffichageMedecinController control)  {
         super("Page Médecin") ;
         this.controller = control ;
+        Connection connection = MySql.getConnection() ;
 
         this.setContentPane(this.panel1);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.panelClinique.setLayout(new GridLayout(0, 1));
-        //VOIR L'AFFICHAGE GESTION CLIENT, AJOUTER UNE JSCROLLPANE A LA PLACE DE CE JPANEL POUR QUE LA SCROLLBAR S'AJOUTE S'IL Y A TROP DE CHOIX QUI S'AFFICHE
-        //this.gestionClient.setLayout(new GridLayout(0, 1));
-        //this.gestionClient.add(ajouterBouttonDossierClient("Durand", "Raphael", "rd@gmail.com")) ;
+        this.scrollPanel.setLayout(new GridLayout(0, 1));
 
         //LES SEULS UTILES POUR L'INSTANT
         this.Libre.addActionListener(this);
         this.Réservé.addActionListener(this);
         this.Archivé.addActionListener(this);
-
-        //ET LUI
         this.ajouterUneAutreCliniqueButton.addActionListener(this);
         this.validerAjouterMedecin.addActionListener(this);
-        //ET LUI
         this.validerButton1.addActionListener(this);
 
         this.comboBox1.addActionListener(this);
@@ -87,63 +86,25 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.validerButton.addActionListener(this);
 
 
-        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "")) {
-            this.controller.getMedecin(newConnection) ;
+        this.controller.getMedecin(connection) ;
+        //affiche la spé du medecin
+        String specialisation = this.controller.getSpeMedecin();
+        this.Spe.setText(specialisation);
 
-            //affiche la spé du medecin
-            String specialisation = this.controller.getSpeMedecin(newConnection);
-            this.Spe.setText(specialisation);
-
-            //affichage des cliniques où bosse le medecin
-            List<String> list = new ArrayList<>() ;
-            list = this.controller.getMedecinClinique(newConnection) ;
-            for(int i = 0 ; i < list.size() ; i++){
-                this.comboBox1.addItem(list.get(i));
-            }
-            //affichage de toute les cliniques
-            list = this.controller.getAllClinique(newConnection) ;
-            for(int i = 0 ; i < list.size() ; i++){
-                this.comboBox2.addItem(list.get(i));
-            }
-
+        //affichage des cliniques où bosse le medecin
+        List<String> list = new ArrayList<>() ;
+        list = this.controller.getMedecinClinique() ;
+        for(int i = 0 ; i < list.size() ; i++){
+            this.comboBox1.addItem(list.get(i));
         }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
+        //affichage de toute les cliniques
+        list = this.controller.getAllClinique(connection) ;
+        for(int i = 0 ; i < list.size() ; i++){
+            this.comboBox2.addItem(list.get(i));
         }
-
 
         this.pack();
         this.setVisible(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(Libre)) {
-            this.Libre.setName("Libre");
-            uncheckBox(Libre);
-        }
-        else if (e.getSource().equals(Réservé)) {
-            this.Réservé.setName("Reserve");
-            uncheckBox(Réservé);
-        }
-        else if (e.getSource().equals(Archivé)) {
-            this.Archivé.setName("Archive");
-            uncheckBox(Archivé);
-        }
-        else if(e.getSource().equals(this.ajouterUneAutreCliniqueButton)){
-            addComboBoxAjouterClinique();
-        }
-        else if (e.getSource().equals(this.validerAjouterMedecin)) {
-            if (!cutString(speMed.getText()).isEmpty() && !cutString(nomMed.getText()).isEmpty() && !cutString(prenomMed.getText()).isEmpty() && !cutString(mailMed.getText()).isEmpty() && !cutString(mdpMed.getText()).isEmpty()) {
-                try {
-                    addMedecin();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-            else {
-                this.resultatAjout.setText("Veuillez remplir les cases !");
-            }
-        }
     }
 
     public String cutString(String mot){
@@ -162,23 +123,26 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.panelClinique.add(tf) ;
 
         ///Actualiser la page
-        this.panelClinique.revalidate();
-        this.panelClinique.repaint();
+        actualiserPage();
     }
 
     public JPanel ajouterBouttonDossierClient(String nom, String prenom, String mail)  {
         JPanel panel = new JPanel() ;
-        panel.setLayout(new GridLayout(1, 5));
-        panel.setForeground(new Color(223,225,229));
+        Border bord = BorderFactory.createEtchedBorder(EtchedBorder.RAISED) ;
+
+        panel.setLayout(new FlowLayout(0, 40, 0));
+        panel.setBorder(bord);
+
         panel.add(new JLabel(nom)) ;
         panel.add(new JLabel(prenom)) ;
         panel.add(new JLabel(mail)) ;
+
         panel.add(new JButton("Voir dossier client")) ;
         panel.add(new JButton("Historique du client")) ;
         return panel ;
     }
 
-    public void addMedecin() throws SQLException {
+    public void addMedecin() {
         int nbClinique = this.panelClinique.getComponentCount()/2 ;
         List<String> cliniques = new ArrayList<>() ;
         for(int i = 0 ; i < nbClinique ; i++){
@@ -188,10 +152,8 @@ public class PageMedecin extends JFrame implements ActionListener {
                 cliniques.add(nomClinique) ;
             }
         }
-        try (Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost/rdv_medical", "root", "")) {
-            if(this.controller.addMedecin(newConnection, new Medecin(-999, speMed.getText(), nomMed.getText(), prenomMed.getText(), mailMed.getText(), mdpMed.getText()), cliniques)){
-                this.resultatAjout.setText("Medecin ajouté avec succès !");
-            }
+        if(this.controller.addMedecin(MySql.getConnection(), new Medecin(-999, speMed.getText(), nomMed.getText(), prenomMed.getText(), mailMed.getText(), mdpMed.getText()), cliniques)){
+            this.resultatAjout.setText("Medecin ajouté avec succès !");
         }
     }
 
@@ -209,6 +171,79 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.Réservé.setSelected(false);
         this.Archivé.setSelected(false);
         checkbox.setSelected(true);
+    }
+
+    public void actualiserPage(){
+        this.panelClinique.revalidate();
+        this.panelClinique.repaint();
+    }
+
+    public void validerRechercheGestionClient(){
+        this.scrollPanel.removeAll();
+        int nbNull = 0;
+        String nom = nomGestionClient.getText(), prenom = prenomGestionClient.getText(), mail = mailGestionClient.getText() ;
+        if(cutString(nom).isEmpty()){
+            nom = null ;
+            nbNull++ ;
+        }
+        if(cutString(prenom).isEmpty()){
+            prenom = null ;
+            nbNull++ ;
+        }
+        if(cutString(mail).isEmpty()){
+            mail = null ;
+            nbNull++ ;
+        }
+        if(nbNull == 3){
+            JLabel label = new JLabel("Veuillez remplir les critères !", JLabel.CENTER) ;
+            label.setForeground(new Color(255, 0, 0));
+            this.scrollPanel.add(label) ;
+            actualiserPage();
+        }
+        else{
+            List<Client> clients = this.controller.getClientsRecherche(MySql.getConnection(), nom, prenom, mail) ;
+            if(clients.size() > 0) {
+                for (int i = 0; i < clients.size(); i++) {
+                    this.scrollPanel.add(ajouterBouttonDossierClient(clients.get(i).getNom(), clients.get(i).getPrenom(), clients.get(i).getMail()));
+                }
+            }
+            else {
+                JLabel label = new JLabel("Les critères ne correspondent à aucun client !", JLabel.CENTER) ;
+                label.setForeground(new Color(255, 0, 0));
+                this.scrollPanel.add(label) ;
+            }
+            actualiserPage();
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(Libre)) {
+            this.Libre.setName("Libre");
+            uncheckBox(Libre);
+        }
+        else if (e.getSource().equals(Réservé)) {
+            this.Réservé.setName("Reserve");
+            uncheckBox(Réservé);
+        }
+        else if (e.getSource().equals(Archivé)) {
+            this.Archivé.setName("Archive");
+            uncheckBox(Archivé);
+        }
+        else if(e.getSource().equals(this.ajouterUneAutreCliniqueButton)){
+            addComboBoxAjouterClinique();
+        }
+        else if (e.getSource().equals(this.validerAjouterMedecin)) {
+            if (!cutString(speMed.getText()).isEmpty() && !cutString(nomMed.getText()).isEmpty() && !cutString(prenomMed.getText()).isEmpty() && !cutString(mailMed.getText()).isEmpty() && !cutString(mdpMed.getText()).isEmpty()) {
+                addMedecin();
+            }
+            else {
+                this.resultatAjout.setText("Veuillez remplir les cases !");
+            }
+        }
+        else if(e.getSource().equals(this.validerButton1)){
+            validerRechercheGestionClient();
+        }
     }
 
 }
