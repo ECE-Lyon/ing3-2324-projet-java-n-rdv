@@ -1,5 +1,6 @@
 package view;
 
+import com.github.lgooddatepicker.components.DatePicker;
 import controller.AffichageMedecinController;
 import model.Client;
 import model.Medecin;
@@ -31,8 +32,6 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JCheckBox Archivé;
     private JComboBox comboBox1;
     private JRadioButton tousLesRendezVousRadioButton;
-    private JFormattedTextField formattedTextField1;
-    private JFormattedTextField formattedTextField2;
     private JButton validerButton;
 
 
@@ -61,6 +60,8 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JFormattedTextField mailMed;
     private JPanel southPanel;
     private JLabel resultatAjout;
+    private DatePicker DateBox1;
+    private DatePicker DateBox2;
 
     public PageMedecin(AffichageMedecinController control)  {
         super("Page Médecin") ;
