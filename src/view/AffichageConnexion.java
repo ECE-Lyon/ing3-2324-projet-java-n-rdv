@@ -109,10 +109,9 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
         return panel;
     }
 
-
-
     public void creerCompte() {
-        JDialog popUp = new JDialog(this, "Création de commte", true) ;
+
+        JDialog popUp = new JDialog(this, "Création de compte", true) ;
         popUp.setLayout(new GridLayout(5, 1, 0, 30));
         this.popUpCopy = popUp ;
         JPanel panel1 = new JPanel(new FlowLayout()) ;
