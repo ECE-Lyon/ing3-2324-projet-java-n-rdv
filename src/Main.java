@@ -22,7 +22,6 @@ public class Main {
         if(args[0].equals("0")){
             MySql.setPassword("root") ;
         }
-        
 
         //Creation de la session
         Session session = new Session() ;
@@ -36,7 +35,7 @@ public class Main {
         session.addObserver(affichagePrinciapel);
 
         while(run){
-            //System.out.println();
+            System.out.println();
             if(session.getTypeConnexion().equals(Session.TypeCompte.CLIENT)) {
                 /** Affichage client, c'est ici (après connexion à un compte) */
                 Client client = new Client() ;
