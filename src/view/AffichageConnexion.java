@@ -90,22 +90,21 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
         // Bouton pour démasquer le mot de passe
         JButton showPasswordButton = new JButton("Afficher");
         showPasswordButton.addActionListener(e -> {
-            if (entrerMdp.getEchoChar() == '*') {
+            System.out.println(entrerMdp.getEchoChar());
+            if (entrerMdp.getEchoChar() == '•') {
                 entrerMdp.setEchoChar((char) 0); // Afficher le texte brut
                 showPasswordButton.setText("Masquer");
             } else {
-                entrerMdp.setEchoChar('*'); // Masquer le texte
+                entrerMdp.setEchoChar('•'); // Masquer le texte
                 showPasswordButton.setText("Afficher");
             }
+
         });
         panel2.add(showPasswordButton);
-
         panel3.add(pasDeCompteBoutton);
-
         panel.add(panel1);
         panel.add(panel2);
         panel.add(panel3);
-
         return panel;
     }
 

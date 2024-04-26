@@ -1,5 +1,4 @@
 package view;
-
 import com.github.lgooddatepicker.components.DatePicker;
 import controller.AffichageMedecinController;
 import model.Client;
