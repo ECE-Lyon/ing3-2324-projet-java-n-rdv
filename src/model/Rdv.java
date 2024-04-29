@@ -1,31 +1,30 @@
 package model;
-import model.Client;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class Rdv {
-    private LocalDateTime dateHeure;
-    private Date date;
+    private Timestamp dateHeure;
     private String note;
     private String etatRdv;
-
     private int idRdv;
     private int idJointure;
-    public Rdv(int idRdv, String note, LocalDateTime dateHeure){
+    private Client client  ;
+
+
+    public Rdv(int idRdv, int idJointure, String note,  String etat,Timestamp dateHeure){
         this.idRdv = idRdv;
+        this.idJointure = idJointure;
         this.note = note;
+        this.etatRdv = etat ;
         this.dateHeure =dateHeure;
     }
-    public Rdv(int idRdv, String note, Date date){
-        this.idRdv = idRdv;
-        this.note = note;
-        this.date = date;
-    }
-    public Rdv(int idJointure,Date date){
-        this.idJointure = idJointure;
-        this.date = date;
-    }
+
+    public int getIdJointure() { return idJointure; }
+
+    public void setEtat(String etat){ this.etatRdv = etat ;}
+    public String getEtat(){ return this.etatRdv ;}
+
     public int getIdRdv() {
         return idRdv;
     }
@@ -33,27 +32,40 @@ public class Rdv {
         this.idRdv = idRdv;
     }
 
+    public void setNote(String note) {
+        this.note = note;
+    }
     public String getNote() {
         return note;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public LocalDateTime getdateHeure() {
-        return dateHeure;
-    }
-
-    public void setHeure(LocalDateTime dateHeure) {
+    public void setDate(Timestamp dateHeure) {
         this.dateHeure = dateHeure;
     }
-
-    public Date getDate() {
-        return date;
+    public Timestamp getDateTimeStamp() {
+        return dateHeure;
+    }
+    public String getDateString() {
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        DateFormat df = new SimpleDateFormat(pattern) ;
+        return df.format(this.dateHeure) ;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public String getHeureString() {
+        String pattern = "HH:mm:ss";
+        DateFormat df = new SimpleDateFormat(pattern) ;
+        return df.format(this.dateHeure) ;
     }
+
+
+    public String getDayString() {
+        String pattern = "yyyy-MM-dd";
+        DateFormat df = new SimpleDateFormat(pattern) ;
+        return df.format(this.dateHeure) ;
+    }
+
+    public void setRdvClient(Client client) {
+        this.client = client;
+    }
+    public Client getRdvClient(){ return this.client ;}
 }

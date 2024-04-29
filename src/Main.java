@@ -1,3 +1,4 @@
+import controller.AffichageClientController;
 import controller.AffichageConnexionController;
 import controller.AffichageMedecinController;
 import model.Client;
@@ -35,11 +36,12 @@ public class Main {
         session.addObserver(affichagePrinciapel);
 
         while(run){
-            //System.out.println();
+            System.out.println();
             if(session.getTypeConnexion().equals(Session.TypeCompte.CLIENT)) {
                 /** Affichage client, c'est ici (après connexion à un compte) */
                 Client client = new Client() ;
-                AffichageClient affichageclient = new AffichageClient() ;
+                AffichageClientController medecinController = new AffichageClientController(session, client) ;
+                AffichageClient affichageclient = new AffichageClient(medecinController) ;
                 run = false ;
             }
             else if(session.getTypeConnexion().equals(Session.TypeCompte.MEDECIN)) {

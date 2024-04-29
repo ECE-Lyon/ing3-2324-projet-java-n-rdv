@@ -27,7 +27,7 @@ public class ClientDaoImpl implements ClientDao {
     }
 
     @Override
-    public List<Client> getClient(String n, String p, String m, int idOperation) throws SQLException {
+    public List<Client> getListClients(String n, String p, String m, int idOperation) throws SQLException {
         List<Client> clients = new ArrayList<>() ;
         List<String> list = switchCase(n, p, m, idOperation) ;
         String sql = switchCasev2(n, p, m, idOperation) ;
@@ -46,15 +46,31 @@ public class ClientDaoImpl implements ClientDao {
             }
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
-                int i = resultSet.getInt(1);
+                int id = resultSet.getInt("idClient");
                 String nom = resultSet.getString("nom");
                 String prenom = resultSet.getString("prenom");
                 String mail = resultSet.getString("mail");
                 String mdp = resultSet.getString("mdp");
-                clients.add(new Client(i, nom, prenom, mail, mdp));
+                clients.add(new Client(id, nom, prenom, mail, mdp));
             }
             return clients;
         }
+    }
+
+    @Override
+    public Client getClientById(int idClient) throws SQLException {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM clients WHERE idClient = ? ")){
+            preparedStatement.setInt(1, idClient);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                String nom = resultSet.getString("nom");
+                String prenom = resultSet.getString("prenom");
+                String mail = resultSet.getString("mail");
+                String mdp = resultSet.getString("mdp");
+                return new Client(idClient, nom, prenom, mail, mdp) ;
+            }
+        }
+        return null ;
     }
 
     @Override
@@ -103,8 +119,6 @@ public class ClientDaoImpl implements ClientDao {
         }
         return list ;
     }
-
-
 
     public String switchCasev2(String n, String p, String m, int idOperation){
        String sql = new String();

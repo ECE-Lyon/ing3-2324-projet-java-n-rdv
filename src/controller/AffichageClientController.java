@@ -1,29 +1,43 @@
 package controller;
-import dao.ClientDao;
-import dao.ClientDaoImpl;
-import dao.RdvDao;
-import dao.RdvDaoImpl;
+import dao.*;
 import model.Client ;
-import model.Medecin;
 import model.Session;
-import view.AffichageConnexion;
 
 import java.sql.Connection;
-import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
 
 public class AffichageClientController {
 
+    Session session ;
     Client client ;
-    Medecin medecin ;
-    Connection connection ;
 
-    public AffichageClientController(Connection connection){
-        this.connection = connection ;
+    public AffichageClientController(Session s, Client c){
+        this.session = s ;
+        this.client = c ;
     }
 
 
-    public void creerRDV(Session s, Date date, Medecin medecin){
-        RdvDao dao = new RdvDaoImpl(connection) ;
+    public List<String> getAllClinique(Connection connection){
+        CliniqueDao dao = new CliniqueDaoImpl(connection) ;
+        try {
+            return dao.getAllClinique() ;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
+
+    public List<String> getAllMedecin(Connection connection){
+        MedecinDao dao = new MedecinDaoImpl(connection) ;
+        try {
+            return dao.getAllMedecin() ;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
 }

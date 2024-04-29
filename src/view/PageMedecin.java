@@ -4,6 +4,7 @@ import controller.AffichageMedecinController;
 import model.Client;
 import model.Medecin;
 import model.MySql;
+import model.Rdv;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -12,8 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +31,14 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JComboBox comboBox1;
     private JRadioButton tousLesRendezVousRadioButton;
     private JButton validerButton;
-
-
     private JFormattedTextField mdpMed;
     private JFormattedTextField speMed;
     private JButton validerAjouterMedecin;
     private JPanel panel2;
     private JPanel JPanel4;
     private JLabel Spe;
+    private DatePicker DateBox1;
+    private DatePicker DateBox2;
 
     //GESTION CLIENT
     private JPanel gestionClient;
@@ -59,8 +58,7 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JFormattedTextField mailMed;
     private JPanel southPanel;
     private JLabel resultatAjout;
-    private DatePicker DateBox1;
-    private DatePicker DateBox2;
+
 
     public PageMedecin(AffichageMedecinController control)  {
         super("Page Médecin") ;
@@ -86,7 +84,7 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.validerButton.addActionListener(this);
 
 
-        this.controller.getMedecin(connection) ;
+        this.controller.getMedecinAndAllClinique(connection) ;
         //affiche la spé du medecin
         String specialisation = this.controller.getSpeMedecin();
         this.Spe.setText(specialisation);
@@ -123,23 +121,7 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.panelClinique.add(tf) ;
 
         ///Actualiser la page
-        actualiserPage();
-    }
-
-    public JPanel ajouterBouttonDossierClient(String nom, String prenom, String mail)  {
-        JPanel panel = new JPanel() ;
-        Border bord = BorderFactory.createEtchedBorder(EtchedBorder.RAISED) ;
-
-        panel.setLayout(new FlowLayout(0, 40, 0));
-        panel.setBorder(bord);
-
-        panel.add(new JLabel(nom)) ;
-        panel.add(new JLabel(prenom)) ;
-        panel.add(new JLabel(mail)) ;
-
-        panel.add(new JButton("Voir dossier client")) ;
-        panel.add(new JButton("Historique du client")) ;
-        return panel ;
+        actualiserPageGestionClient();
     }
 
     public void addMedecin() {
@@ -173,7 +155,7 @@ public class PageMedecin extends JFrame implements ActionListener {
         checkbox.setSelected(true);
     }
 
-    public void actualiserPage(){
+    public void actualiserPageGestionClient(){
         this.panelClinique.revalidate();
         this.panelClinique.repaint();
     }
@@ -198,13 +180,13 @@ public class PageMedecin extends JFrame implements ActionListener {
             JLabel label = new JLabel("Veuillez remplir les critères !", JLabel.CENTER) ;
             label.setForeground(new Color(255, 0, 0));
             this.scrollPanel.add(label) ;
-            actualiserPage();
+            actualiserPageGestionClient();
         }
         else{
             List<Client> clients = this.controller.getClientsRecherche(MySql.getConnection(), nom, prenom, mail) ;
             if(clients.size() > 0) {
                 for (int i = 0; i < clients.size(); i++) {
-                    this.scrollPanel.add(ajouterBouttonDossierClient(clients.get(i).getNom(), clients.get(i).getPrenom(), clients.get(i).getMail()));
+                    this.scrollPanel.add(ajouterBouttonDossierClient(clients.get(i).getNom(), clients.get(i).getPrenom(), clients.get(i).getMail(), clients.get(i).getIdClient()));
                 }
             }
             else {
@@ -212,8 +194,37 @@ public class PageMedecin extends JFrame implements ActionListener {
                 label.setForeground(new Color(255, 0, 0));
                 this.scrollPanel.add(label) ;
             }
-            actualiserPage();
+            actualiserPageGestionClient();
         }
+    }
+
+    public JPanel ajouterBouttonDossierClient(String nom, String prenom, String mail, int idClient)  {
+        JPanel panel = new JPanel() ;
+        Border bord = BorderFactory.createEtchedBorder(EtchedBorder.RAISED) ;
+
+        panel.setLayout(new FlowLayout(0, 40, 0));
+        panel.setBorder(bord);
+
+        panel.add(new JLabel(nom)) ;
+        panel.add(new JLabel(prenom)) ;
+        panel.add(new JLabel(mail)) ;
+        JButton bouttonHistorique = new JButton("Historique") ;
+
+        List<Rdv> rdvList = this.controller.getRdvsClient(MySql.getConnection(), idClient) ;
+        List<Medecin> medecinList = new ArrayList<>() ;
+        for(int i = 0 ; i < rdvList.size() ; i++){
+            int[] tabId = this.controller.getIdMedecinCliniqueByIdJointure(MySql.getConnection(), rdvList.get(i).getIdJointure()) ;
+            medecinList.add(this.controller.getMedecinAndOneClinique(MySql.getConnection(), tabId)) ;
+        }
+        bouttonHistorique.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HistoriqueClient historique = new HistoriqueClient(rdvList, medecinList) ;
+            }
+        });
+
+        panel.add(bouttonHistorique) ;
+        return panel ;
     }
 
     @Override

@@ -3,6 +3,7 @@ import model.Clinique;
 import model.Medecin;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MedecinDaoImpl implements MedecinDao{
@@ -24,7 +25,7 @@ public class MedecinDaoImpl implements MedecinDao{
         }
     }
     @Override
-    public Medecin getMedecin(int id) throws SQLException {
+    public Medecin getMedecinById(int id) throws SQLException {
         Medecin medecin = new Medecin() ;
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM medecins where idMedecin = ?")){
             preparedStatement.setInt(1, id);
@@ -53,7 +54,20 @@ public class MedecinDaoImpl implements MedecinDao{
     }
 
     @Override
-    public int getIdMedecin(String mail, String nom, String prenom) throws SQLException {
+    public List<String> getAllMedecin() throws SQLException {
+        List<String> list = new ArrayList<>( ) ;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM medecins")){
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()){
+                    list.add(result.getString("nom") + " " + result.getString("prenom")) ;
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public int getIdMedecinByParameters(String mail, String nom, String prenom) throws SQLException {
         Medecin medecin = new Medecin() ;
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT idMedecin FROM medecins where mail = ? AND nom = ? AND prenom = ?")){
             preparedStatement.setString(1, mail);

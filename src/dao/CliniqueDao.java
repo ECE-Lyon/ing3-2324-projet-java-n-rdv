@@ -8,9 +8,9 @@ import java.util.List;
 public interface CliniqueDao {
     void addClinique (Clinique newClinique) throws SQLException;
     Clinique getClinique(int id) throws SQLException;
-    List<Clinique> getAllClinique(List<String> list) throws SQLException;
+    List<Clinique> getCliniqueByName(List<String> list) throws SQLException;
 
-    List<String> getAllCliniquev2() throws SQLException;
+    List<String> getAllClinique() throws SQLException;
 
 
     void deleteClinique(int id) throws SQLException;

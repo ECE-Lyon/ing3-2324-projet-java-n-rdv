@@ -25,7 +25,7 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
     //Elements de la fenêtre de connexion
     private JLabel titre = new JLabel("CONNEXION", JLabel.CENTER) ;
     private JTextField entrerMail = new JTextField(50) ;
-    private JTextField entrerMdp = new JTextField(50) ;
+    private JPasswordField entrerMdp = new JPasswordField(45);
     private JButton boutton = new JButton("Entrer") ;
     private JButton pasDeCompteBoutton = new JButton("Je n'ai pas de compte") ;
     private JLabel mdpIncorrecte = new JLabel("", JLabel.CENTER) ;
@@ -84,7 +84,6 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
         panel1.add(entrerMail);
 
         panel2.add(new JLabel("Password :"));
-        JPasswordField entrerMdp = new JPasswordField(45); // Utilisation de JPasswordField
         panel2.add(entrerMdp);
 
         // Bouton pour démasquer le mot de passe

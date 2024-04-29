@@ -39,7 +39,7 @@ public class CliniqueDaoImpl implements CliniqueDao{
     }
 
     @Override
-    public List<Clinique> getAllClinique(List<String> cliniques) throws SQLException {
+    public List<Clinique> getCliniqueByName(List<String> cliniques) throws SQLException {
         List<Clinique> list = new ArrayList<>() ;
         for(int i = 0 ; i < cliniques.size() ; i++) {
             try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM cliniques WHERE nom = ?")) {
@@ -56,7 +56,7 @@ public class CliniqueDaoImpl implements CliniqueDao{
     }
 
     @Override
-    public List<String> getAllCliniquev2() throws SQLException {
+    public List<String> getAllClinique() throws SQLException {
         List<String> list = new ArrayList<>( ) ;
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT nom FROM cliniques")){
             try(ResultSet result = preparedStatement.executeQuery()) {
