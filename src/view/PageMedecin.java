@@ -70,6 +70,9 @@ public class PageMedecin extends JFrame implements ActionListener {
 
         this.panelClinique.setLayout(new GridLayout(0, 1));
         this.scrollPanel.setLayout(new GridLayout(0, 1));
+        JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
+        label.setForeground(new Color(130, 145, 132, 255));
+        this.scrollPanel.add(label) ;
 
         //LES SEULS UTILES POUR L'INSTANT
         this.Libre.addActionListener(this);

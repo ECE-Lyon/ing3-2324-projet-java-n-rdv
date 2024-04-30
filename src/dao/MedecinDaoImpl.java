@@ -95,6 +95,22 @@ public class MedecinDaoImpl implements MedecinDao{
             return null;
         }
     }
+
+
+    @Override
+    public Medecin getMedecinByName(String name) throws SQLException {
+        Medecin medecin = null;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM medecins WHERE nom = ?")) {
+            preparedStatement.setString(1, name);
+            try (ResultSet result = preparedStatement.executeQuery()) {
+                while (result.next()) {
+                    medecin = new Medecin(result.getInt("idMedecin"), result.getString("specification"),result.getString("nom"), result.getString("prenom"), result.getString("mail"), result.getString("mdp"));
+                }
+            }
+        }
+        return medecin;
+    }
+
     @Override
     public void deleteMedecin(int id) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM medecins where idMedecin = ?")) {

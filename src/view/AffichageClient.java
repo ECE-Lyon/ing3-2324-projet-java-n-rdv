@@ -12,11 +12,14 @@ import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /** VOIR POUR LES COMBOBOXS , QUAND TU SELECTIONNES UN MEDECIN, TU AURAS DIRECTEMENT QUE LES CLINIQUES OU IL BOSSE, ET INVERSEMENT*/
@@ -44,7 +47,10 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         this.controller = control ;
         this.setContentPane(this.panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        this.scrollPanel.setLayout(new GridLayout(0,1));
+        JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
+        label.setForeground(new Color(130, 145, 132, 255));
+        this.scrollPanel.add(label) ;
 
         List<String> list = new ArrayList<>() ;
         list = this.controller.getAllClinique(MySql.getConnection()) ;
@@ -65,20 +71,17 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
 
     public void validerRechercheGestionClient(){
         this.scrollPanel.removeAll();
-        int nbNull = 0;
-        String nomMedecin = (String)comboBoxMedecin.getSelectedItem(), prenom = (String)comboBoxClinique.getSelectedItem() ;
-        if(cutString(nomMedecin).isEmpty()){
+        String nomMedecin = (String)comboBoxMedecin.getSelectedItem(), nomClinique = (String)comboBoxClinique.getSelectedItem() ;
+        if(nomMedecin.equals("-----")){
             nomMedecin = null ;
-            nbNull++ ;
         }
-        if(cutString(prenom).isEmpty()){
-            prenom = null ;
-            nbNull++ ;
+        if(nomClinique.equals("-----")){
+            nomClinique = null ;
         }
-    }
-
-    public String cutString(String mot){
-        return mot.replace(" ", "") ;
+        String pattern = "yyyy-MM-dd";
+        DateTimeFormatter  df =  DateTimeFormatter.ofPattern(pattern) ;
+        Date parsedDate = new Date(this.datePicker.getDate().format(df)) ;
+        Timestamp date = new Timestamp(parsedDate.getTime());
     }
 
     @Override
@@ -93,12 +96,10 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         LocalDate today = LocalDate.now();
         if (this.datePicker.getDate().isBefore(today)) {
             this.datePicker.setDate(today);
-
         }
-                /*
                 String pattern = "yyyy-MM-dd";
                 DateTimeFormatter  df =  DateTimeFormatter.ofPattern(pattern) ;
                 System.out.println(datePicker.getDate().format(df));
-                */
+
     }
 }

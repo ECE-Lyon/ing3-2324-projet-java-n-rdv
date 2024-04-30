@@ -31,6 +31,8 @@ public class Medecin extends Compte {
         this.quelClinique = new ArrayList<>();
     }
 
+
+
     public List<Clinique> getCliniques(){ return this.quelClinique ;}
     public void setClinique(List<Clinique> cliniques){ this.quelClinique = cliniques ;}
     public void addClinique(Clinique clinique){ this.quelClinique.add(clinique) ;}

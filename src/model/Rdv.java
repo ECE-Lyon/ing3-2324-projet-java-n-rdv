@@ -45,6 +45,8 @@ public class Rdv {
     public Timestamp getDateTimeStamp() {
         return dateHeure;
     }
+
+
     public String getDateString() {
         String pattern = "yyyy-MM-dd HH:mm:ss";
         DateFormat df = new SimpleDateFormat(pattern) ;

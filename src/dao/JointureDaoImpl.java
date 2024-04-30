@@ -23,9 +23,15 @@ public class JointureDaoImpl implements JointureDao {
     public List<Integer> getIdJointures(int idMedecin, int idClinique) throws SQLException{
         List<Integer> idJointures = new ArrayList<>() ;
         try(PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT * FROM medecin_clinique WHERE " +
-                "(idMedecin = ? OR idMedecin IS NULL) AND (idClinique = ? OR idClinique IS NULL)")){
-            preparedStatement1.setInt(1, idMedecin);
-            preparedStatement1.setInt(2, idClinique);
+                "idMedecin = COALESCE(?, idMedecin) AND idClinique = COALESCE(?, idClinique)")){
+            if(idMedecin == -999){
+                preparedStatement1.setString(1, null);
+            }
+            else{ preparedStatement1.setInt(1, idMedecin); }
+            if(idClinique == -999){
+                preparedStatement1.setString(2, null);
+            }
+            else {preparedStatement1.setInt(2, idClinique);}
             ResultSet resultSet = preparedStatement1.executeQuery();
             while(resultSet.next()){
                 idJointures.add(resultSet.getInt("idJointure"));

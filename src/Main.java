@@ -49,7 +49,6 @@ public class Main {
                 AffichageMedecinController medecinController = new AffichageMedecinController(session, medecin) ;
                 PageMedecin affichagemedecin = new PageMedecin(medecinController);
                 run = false ;
-
             }
         }
 
