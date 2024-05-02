@@ -24,7 +24,7 @@ public class CliniqueDaoImpl implements CliniqueDao{
         }
     }
     @Override
-    public Clinique getClinique(int id) throws SQLException {
+    public Clinique getCliniqueById(int id) throws SQLException {
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM cliniques where idClinique = ?")){
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
