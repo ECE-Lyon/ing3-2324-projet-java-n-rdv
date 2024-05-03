@@ -34,7 +34,6 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
     private JButton rechercherButton;
     private DatePicker datePicker;
 
-    private JButton prendreCeRendezVousButton;
     private JButton voirNoteButton;
     private JButton voirNoteButton1;
     private JButton voirNoteButton2;
@@ -51,22 +50,10 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         this.controller.getClientConnecte(connection) ;
         this.setContentPane(this.panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //JButton buttonNote = new JButton("Note") ;
 
-        //ouvrir page note
-        buttonNote.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ClientNote buttonNote = new ClientNote(control);
-                buttonNote.setVisible(true);
-            }
-        });
-        //afficher heure
-        String heureMedecin =this.controller.getHeure(MySql.getConnection());
-        this.heure.setText(heureMedecin);
+
 
         this.scrollPanel.setLayout(new GridBagLayout());
-
         JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
         label.setForeground(new Color(130, 145, 132, 255));
         this.scrollPanel.add(label) ;
@@ -88,11 +75,11 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         }
 
 
+        fonctionRaph();
+
+
         this.pack();
         this.setVisible(true);
-
-
-
     }
 
 
@@ -120,7 +107,6 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         Date sqlDate = Date.valueOf(date) ;
 
 
-
         List<Creneau> creneaux = this.controller.getRdvLibre(MySql.getConnection(), nomMedecin, nomClinique, sqlDate) ;
         creneaux.sort(Comparator.comparingInt(Creneau::getTime));
         List<Medecin> medecins = this.controller.getMedecinByIdWithCreneauxLibre(MySql.getConnection(), creneaux) ;
@@ -128,9 +114,7 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
 
         this.scrollPanel.revalidate();
         this.scrollPanel.repaint();
-
     }
-
 
     public void creerPanelRecherche(List<Creneau> c, List<Medecin> m){
         createTopSideOfPanel(c.size());
@@ -151,14 +135,24 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
             this.scrollPanel.add(bouttonRDV, constraints) ;
             constraints.gridx = 0;
             constraints.gridy ++ ;
+            int k = i ;
             bouttonRDV.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    /// PRENDRE LE RDV
+                    ConfirmerRDV popUpConfirmer = new ConfirmerRDV() ;
+                    boolean resultat = popUpConfirmer.resultat() ;
+                    if(resultat){
+                        controller.prendreRdv(MySql.getConnection(), c.get(k));
+                        scrollPanel.removeAll();
+                        JLabel label = new JLabel("Rendez-vous pris avec succès!", JLabel.CENTER) ;
+                        label.setForeground(new Color(126, 252, 88, 255));
+                        scrollPanel.add(label) ;
+                        scrollPanel.revalidate();
+                        scrollPanel.repaint();
+                    }
                 }
             });
         }
-
     }
 
     public void createTopSideOfPanel(int size){
@@ -209,6 +203,21 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
             label.setForeground(new Color(133, 89, 89, 255));
             this.scrollPanel.add(label) ;
         }
+    }
+
+    public void fonctionRaph(){
+        //JButton buttonNote = new JButton("Note") ;
+        //ouvrir page note
+        buttonNote.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClientNote buttonNote = new ClientNote(controller);
+                buttonNote.setVisible(true);
+            }
+        });
+        //afficher heure
+        String heureMedecin =this.controller.getHeure(MySql.getConnection());
+        this.heure.setText(heureMedecin);
     }
 
 

@@ -27,7 +27,7 @@ public class AgendaDaoImpl implements AgendaDao{
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     while (result.next()) {
-                        Creneau cr = new Creneau(result.getDate("jour"), result.getInt("heure"), result.getInt("idJointure")) ;
+                        Creneau cr = new Creneau(result.getInt("idAgenda"), result.getDate("jour"), result.getInt("heure"), result.getInt("idJointure")) ;
                         list.add(cr);
                     }
                 }
@@ -37,4 +37,11 @@ public class AgendaDaoImpl implements AgendaDao{
     }
 
 
+    public boolean supprimerCreneauById(int idCreneau) throws SQLException{
+        try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM emploi_du_temps where idAgenda = ?")){
+            preparedStatement.setInt(1, idCreneau);
+            if(preparedStatement.execute()){return true ;}
+            else {return false ;}
+        }
+    }
 }

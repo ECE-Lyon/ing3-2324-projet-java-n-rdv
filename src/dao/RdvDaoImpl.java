@@ -1,13 +1,11 @@
 package dao;
 
-import model.Clinique;
-import model.Medecin;
-import model.Rdv;
-import model.Client;
+import model.*;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,15 +14,23 @@ public class RdvDaoImpl implements RdvDao{
     public RdvDaoImpl(Connection connection){this.connection = connection;}
 
     @Override
-    public void addRdv(Rdv newRdv, Medecin medecin, Client client, Clinique clinique, int idJointure) throws SQLException {
-        try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO rdv(note, heure, idClient, idJointure)" +
-                " VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, newRdv.getNote());
-            preparedStatement.setInt(3,client.getIdClient());
-            preparedStatement.setInt(4, idJointure);
+    public void addRdv(Creneau creneau, int idClient) throws SQLException {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(creneau.getDate());
+        calendar.set(Calendar.HOUR, creneau.getTime()) ;
+        Timestamp time = new Timestamp(calendar.getTimeInMillis()) ;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO rdv(note, heure, idClient, idJointure, etat)" +
+                " VALUES (?, ?, ?, ?, ?)")) {
+
+            preparedStatement.setString(1, "RDV à venir");
+            preparedStatement.setTimestamp(2, time);
+            preparedStatement.setInt(3, idClient);
+            preparedStatement.setInt(4, creneau.getIdJointure());
+            preparedStatement.setString(5, "Reserve");
             preparedStatement.execute();
         }
     }
+
     @Override
     public Rdv getRdv(String etat) throws SQLException {
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT (idJointure, heure) FROM rdv where Etat = ?")){

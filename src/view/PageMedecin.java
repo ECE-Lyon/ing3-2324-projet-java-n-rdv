@@ -169,6 +169,7 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.panelClinique.repaint();
     }
 
+    ///Quand on appuie sur le boutton "Rechercher" de la page de Gestion CLient, on appelle cette fonction
     public void validerRechercheGestionClient(){
         this.scrollPanel.removeAll();
         int nbNull = 0;
@@ -192,9 +193,12 @@ public class PageMedecin extends JFrame implements ActionListener {
             actualiserPageGestionClient();
         }
         else{
+            //Si les 3 TextField ne sont pas vides, on effectue la recherche dans la BDD en fonction des critères rentrés
             List<Client> clients = this.controller.getClientsRecherche(MySql.getConnection(), nom, prenom, mail) ;
+            //Si la liste de clients que l'on récupère de la bdd contient un client à l'intérieur, on doit l'afficher
             if(clients.size() > 0) {
                 for (int i = 0; i < clients.size(); i++) {
+                    ///Pour chaque client dans la liste, on ajoute dans le JPanel un panel, qui correspond à un client
                     this.scrollPanel.add(ajouterBouttonDossierClient(clients.get(i).getNom(), clients.get(i).getPrenom(), clients.get(i).getMail(), clients.get(i).getIdClient()));
                 }
             }
@@ -207,6 +211,8 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
     }
 
+
+    /// La fonction pour ajouter les clients en résultat de recherche (et avoir l'historique)
     public JPanel ajouterBouttonDossierClient(String nom, String prenom, String mail, int idClient)  {
         JPanel panel = new JPanel() ;
         Border bord = BorderFactory.createEtchedBorder(EtchedBorder.RAISED) ;
@@ -214,17 +220,25 @@ public class PageMedecin extends JFrame implements ActionListener {
         panel.setLayout(new FlowLayout(0, 40, 0));
         panel.setBorder(bord);
 
+        ///ICI, on rajoute le nom, prénom et mail du client
         panel.add(new JLabel(nom)) ;
         panel.add(new JLabel(prenom)) ;
         panel.add(new JLabel(mail)) ;
-        JButton bouttonHistorique = new JButton("Historique") ;
 
+        ///A partir de là, on ajoute le boutton associé aux infos précédentes pour voir l'historique du client en question
+        JButton bouttonHistorique = new JButton("Historique") ;
+        ///Ici, on prend de la bdd l'ensemble des rdvs du client en question, avec l'id du client
         List<Rdv> rdvList = this.controller.getRdvsClient(MySql.getConnection(), idClient) ;
         List<Medecin> medecinList = new ArrayList<>() ;
         for(int i = 0 ; i < rdvList.size() ; i++){
+            ///Pour chaque rdv, on a une IdJointure qui correspond au couple Medecin/Clinque où se passe/s'est passé le rdv
+            ///On recupère donc l'id de la clinique et du médecin associé à chaque rdv avec l'idJointure
+            ///Après, avec ces 2 ids, on peut enfin récupérer le medecin en question.
+            ///A l'intérieur de chaque medecin, on insère aussi la clinique où le rdv est. (Elle est dans une liste, et il n'y a que 1 clinique dans cette liste
             int[] tabId = this.controller.getIdMedecinCliniqueByIdJointure(MySql.getConnection(), rdvList.get(i).getIdJointure()) ;
             medecinList.add(this.controller.getMedecinAndOneClinique(MySql.getConnection(), tabId)) ;
         }
+        ///Quand on appuie sur le boutton, on rentre les 2 listes (de rdv et de medecin); Un pop-up s'affiche
         bouttonHistorique.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

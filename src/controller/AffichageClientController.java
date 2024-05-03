@@ -150,4 +150,18 @@ public class AffichageClientController {
         return listMedecin ;
     }
 
+    /// AJOUTER le rdv dans la liste de rdv
+    public void prendreRdv(Connection connection, Creneau creneau){
+        RdvDao daoRdv= new RdvDaoImpl(connection) ;
+        AgendaDao daoCreneau = new AgendaDaoImpl(connection) ;
+
+        try {
+            daoCreneau.supprimerCreneauById(creneau.getIdCreneau());
+            daoRdv.addRdv(creneau, this.session.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

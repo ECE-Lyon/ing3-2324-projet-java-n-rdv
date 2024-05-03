@@ -6,18 +6,21 @@ import java.text.SimpleDateFormat;
 import java.sql.Date;
 
 public class Creneau {
+    private int idCreneau ;
     private Date date ;
     private int time ;
     private int idJointure ;
 
     public Creneau(){}
 
-    public Creneau(Date d, int t, int id){
+    public Creneau(int idd,Date d, int t, int id){
+        this.idCreneau = idd ;
         this.date = d ;
         this.time = t;
         this.idJointure = id ;
     }
 
+    public int getIdCreneau() {return this.idCreneau ;}
 
     public int getIdJointure() { return this.idJointure; }
     public void setIdJointure(int i) { this.idJointure = i; }

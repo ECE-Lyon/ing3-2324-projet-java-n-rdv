@@ -10,4 +10,5 @@ public interface AgendaDao {
 
 
     public List<Creneau> getCreneauLibre(List<Integer> idJointures, Date date) throws SQLException ;
+    public boolean supprimerCreneauById(int idCreneau) throws SQLException ;
 }

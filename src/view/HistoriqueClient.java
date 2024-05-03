@@ -26,7 +26,10 @@ public class HistoriqueClient extends JDialog {
         this.rdvFutur.setLayout(new GridLayout(0,1));
         this.rdvPasse.setLayout(new GridLayout(0,1));
 
+        ///On fait une boucle de la taille de la liste pour afficher tous les rdv
         for(int i =0 ; i < rdv.size() ; i++){
+            ///Si le rdv est avant la date d'aujourd'hui, on l'insère dans les rdv passés, sinon futur.
+            //Dans la fonction, on veut un rdv et un medecin, comme c'est une boucle, on insère le i-ème rdv et le i-ème médecin associé
             if(rdv.get(i).getDateTimeStamp().before(new Timestamp(System.currentTimeMillis()))) {
                 this.rdvPasse.add(createPanelRdv(rdv.get(i), medecin.get(i))) ;
             }
@@ -77,10 +80,9 @@ public class HistoriqueClient extends JDialog {
         panel6.setLayout(new BorderLayout(60, 10));
         panel6.setBorder(bord);
         panel6.add(new JLabel("Clinique: ", JLabel.CENTER), BorderLayout.NORTH) ;
+        //Comme je l'ai écris avant, le medecin comprend la clinique qui correspond à l'idJointure du rdv; Le médecin comprend juste une seule clinique est dans la liste à l'index 0 donc
         panel6.add(new JLabel(med.getCliniques().get(0).getLocalisation(), JLabel.CENTER), BorderLayout.CENTER) ;
         panel.add(panel6) ;
-
-        //CHERCHER LE MEDECIN
 
         return panel ;
     }
