@@ -17,4 +17,8 @@ public interface ClientDao{
 
     void updateClient (Client client) throws SQLException;
 
+    public String getNoteClient(int id) throws SQLException;
+
+    public String getHeureClient(int id) throws SQLException;
+
 }

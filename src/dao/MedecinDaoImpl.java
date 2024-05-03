@@ -130,4 +130,6 @@ public class MedecinDaoImpl implements MedecinDao{
             preparedStatement.execute();
         }
     }
+
+
 }

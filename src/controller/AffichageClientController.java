@@ -1,5 +1,9 @@
 package controller;
 import dao.*;
+import model.Client ;
+import model.Medecin;
+import model.Rdv;
+import model.Session;
 import model.*;
 
 import java.sql.Connection;
@@ -13,9 +17,21 @@ public class AffichageClientController {
     Session session ;
     Client client ;
 
+
     public AffichageClientController(Session s, Client c){
         this.session = s ;
         this.client = c ;
+
+    }
+    //Avoir le client actuellement connecté
+    public Client getClientConnecte(Connection connection){
+        ClientDao dao = new ClientDaoImpl(connection) ;
+        try {
+            this.client = dao.getClientById(session.getId()) ;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return this.client ;
     }
 
     // AVOIR l'ensemble des cliniques pour les afficher dans le Combo Box
@@ -35,6 +51,25 @@ public class AffichageClientController {
         try {
             return dao.getAllMedecin() ;
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getNote(Connection connection){
+        ClientDao dao = new ClientDaoImpl(connection);
+        try{
+            //System.out.println(this.client.getIdClient());
+            return dao.getNoteClient(this.client.getIdClient()) ;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getHeure(Connection connection){
+        ClientDao dao =new ClientDaoImpl(connection);
+        try{
+            return dao.getHeureClient(this.client.getIdClient());
+        }catch(SQLException e){
             throw new RuntimeException(e);
         }
     }

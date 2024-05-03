@@ -1,10 +1,7 @@
 import controller.AffichageClientController;
 import controller.AffichageConnexionController;
 import controller.AffichageMedecinController;
-import model.Client;
-import model.Medecin;
-import model.Session;
-import model.MySql ;
+import model.*;
 import view.*;
 
 
@@ -40,6 +37,7 @@ public class Main {
             if(session.getTypeConnexion().equals(Session.TypeCompte.CLIENT)) {
                 /** Affichage client, c'est ici (après connexion à un compte) */
                 Client client = new Client() ;
+
                 AffichageClientController medecinController = new AffichageClientController(session, client) ;
                 AffichageClient affichageclient = new AffichageClient(medecinController) ;
                 run = false ;

@@ -12,6 +12,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,12 +39,32 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
     private JButton voirNoteButton1;
     private JButton voirNoteButton2;
     private JButton voirNoteButton3;
+    private JLabel heure;
+    private JButton buttonNote;
 
     public AffichageClient(AffichageClientController control){
         super("Page Client") ;
+
+        Connection connection = MySql.getConnection() ;
+
         this.controller = control ;
+        this.controller.getClientConnecte(connection) ;
         this.setContentPane(this.panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //JButton buttonNote = new JButton("Note") ;
+
+        //ouvrir page note
+        buttonNote.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClientNote buttonNote = new ClientNote(control);
+                buttonNote.setVisible(true);
+            }
+        });
+        //afficher heure
+        String heureMedecin =this.controller.getHeure(MySql.getConnection());
+        this.heure.setText(heureMedecin);
+
         this.scrollPanel.setLayout(new GridBagLayout());
 
         JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
@@ -67,6 +90,9 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
 
         this.pack();
         this.setVisible(true);
+
+
+
     }
 
 
@@ -192,6 +218,7 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
             validerRecherche();
         }
     }
+
 
     @Override
     public void dateChanged(DateChangeEvent dateChangeEvent) {

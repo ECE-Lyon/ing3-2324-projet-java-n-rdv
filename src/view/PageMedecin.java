@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PageMedecin extends JFrame implements ActionListener {
@@ -39,6 +40,7 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JLabel Spe;
     private DatePicker DateBox1;
     private DatePicker DateBox2;
+    private JComboBox comboBox3;
 
     //GESTION CLIENT
     private JPanel gestionClient;
@@ -87,10 +89,14 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.validerButton.addActionListener(this);
 
 
+
         this.controller.getMedecinAndAllClinique(connection) ;
         //affiche la spé du medecin
         String specialisation = this.controller.getSpeMedecin();
         this.Spe.setText(specialisation);
+
+
+
 
         //affichage des cliniques où bosse le medecin
         List<String> list = new ArrayList<>() ;

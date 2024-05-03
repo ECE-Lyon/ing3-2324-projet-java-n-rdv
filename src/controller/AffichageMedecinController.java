@@ -42,6 +42,10 @@ public class AffichageMedecinController {
         return this.medecin.getSpecification() ;
     }
 
+
+
+
+
     //Avoir le médecin actuellement connecté
     public Medecin getMedecinAndAllClinique(Connection connection){
         MedecinDao dao = new MedecinDaoImpl(connection) ;
@@ -135,6 +139,8 @@ public class AffichageMedecinController {
         }
         return rdv ;
     }
+
+
 
     //Avoir l'id du medecin et de la clinique avec l'id de la Jointure medecin_clinique
     public int[] getIdMedecinCliniqueByIdJointure(Connection connection, int idJointure){

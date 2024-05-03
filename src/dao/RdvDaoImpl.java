@@ -48,6 +48,7 @@ public class RdvDaoImpl implements RdvDao{
         try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE rdv SET idRdv = ?, note = ?, heure = ?")){
             preparedStatement.setInt(1,rdv.getIdRdv());
             preparedStatement.setString(2, rdv.getNote());
+            /*preparedStatement.setDate(3,rdv.getDate());*/
             preparedStatement.execute();
         }
     }

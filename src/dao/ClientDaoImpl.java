@@ -91,6 +91,29 @@ public class ClientDaoImpl implements ClientDao {
             preparedStatement.execute();
         }
     }
+    public String getNoteClient(int id) throws SQLException {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT note FROM rdv where idClient = ?")){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if  (resultSet.next()){
+             return resultSet.getString("note");
+            }
+            return null;
+        }
+    }
+
+    public String getHeureClient(int id) throws SQLException {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT heure FROM rdv where idClient = ?")){
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if  (resultSet.next()){
+                return resultSet.getString("heure");
+            }
+            return null;
+        }
+
+    }
+
 
     public List<String> switchCase(String n, String p, String m, int idOperation){
         List<String> list = new ArrayList<>() ;
@@ -147,4 +170,6 @@ public class ClientDaoImpl implements ClientDao {
         }
         return sql ;
     }
+
+
 }

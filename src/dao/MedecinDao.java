@@ -15,4 +15,6 @@ public interface MedecinDao {
     void deleteMedecin(int id) throws SQLException;
     void updateMedecin (Medecin medecin) throws SQLException;
 
+
+
 }
