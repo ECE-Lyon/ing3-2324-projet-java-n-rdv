@@ -1,5 +1,7 @@
 package view;
 import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
+import com.github.lgooddatepicker.zinternaltools.DateChangeEvent;
 import controller.AffichageMedecinController;
 import model.Client;
 import model.Medecin;
@@ -13,8 +15,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class PageMedecin extends JFrame implements ActionListener {
@@ -40,7 +44,6 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JLabel Spe;
     private DatePicker DateBox1;
     private DatePicker DateBox2;
-    private JComboBox comboBox3;
 
     //GESTION CLIENT
     private JPanel gestionClient;
@@ -61,6 +64,14 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JPanel southPanel;
     private JLabel resultatAjout;
 
+    ///AJOUTER CRENEAUX
+    private JButton validerBouttonCreneau;
+    private JComboBox comboBox3;
+    private JComboBox comboBox4;
+    private JComboBox comboBox5;
+    private DatePicker datePickerCreneau;
+    private JLabel labelReussi;
+
 
     public PageMedecin(AffichageMedecinController control)  {
         super("Page Médecin") ;
@@ -76,17 +87,25 @@ public class PageMedecin extends JFrame implements ActionListener {
         label.setForeground(new Color(130, 145, 132, 255));
         this.scrollPanel.add(label) ;
 
-        //LES SEULS UTILES POUR L'INSTANT
+        //LISTENER
         this.Libre.addActionListener(this);
         this.Réservé.addActionListener(this);
         this.Archivé.addActionListener(this);
         this.ajouterUneAutreCliniqueButton.addActionListener(this);
         this.validerAjouterMedecin.addActionListener(this);
         this.validerButton1.addActionListener(this);
-
+        this.validerBouttonCreneau.addActionListener(this);
         this.comboBox1.addActionListener(this);
         this.tousLesRendezVousRadioButton.addActionListener(this);
         this.validerButton.addActionListener(this);
+        this.datePickerCreneau.addDateChangeListener(new DateChangeListener() {
+            @Override
+            public void dateChanged(DateChangeEvent dateChangeEvent) {
+                if(datePickerCreneau.getDate().isBefore(LocalDate.now())) {
+                    datePickerCreneau.setDate(LocalDate.now());
+                }
+            }
+        });
 
 
 
@@ -96,13 +115,12 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.Spe.setText(specialisation);
 
 
-
-
         //affichage des cliniques où bosse le medecin
         List<String> list = new ArrayList<>() ;
         list = this.controller.getMedecinClinique() ;
         for(int i = 0 ; i < list.size() ; i++){
             this.comboBox1.addItem(list.get(i));
+            this.comboBox3.addItem(list.get(i)) ;
         }
         //affichage de toute les cliniques
         list = this.controller.getAllClinique(connection) ;
@@ -250,6 +268,34 @@ public class PageMedecin extends JFrame implements ActionListener {
         return panel ;
     }
 
+    public void validerAjoutCreneau(){
+        String pattern = "yyyy-MM-dd";
+        DateTimeFormatter df =  DateTimeFormatter.ofPattern(pattern) ;
+
+        LocalDate date = null ;
+        if(this.datePickerCreneau.getDate() != null) {
+            date = LocalDate.parse(this.datePickerCreneau.getDate().format(df)) ;
+        }
+        else {
+            date = LocalDate.now() ;
+            this.datePickerCreneau.setDate(date);
+        }
+        Date sqlDate = Date.valueOf(date) ;
+        String clinique = (String) this.comboBox3.getSelectedItem() ;
+        String heure = (String) this.comboBox4.getSelectedItem() ;
+        String duree = (String) this.comboBox5.getSelectedItem() ;
+        String[] tab = new String[2] ;
+        String[] tab2 = new String[1] ;
+        tab = heure.split(":") ;
+        tab2 = duree.split("h") ;
+        int heureLibre = Integer.parseInt(tab[0]) ;
+        int dureeLibre = Integer.parseInt(tab2[0]) ;
+        this.controller.creerCreneauLibre(MySql.getConnection(), clinique, heureLibre, sqlDate, dureeLibre);
+
+        this.labelReussi.setText("Créneaux insérés avec succès !");
+        this.labelReussi.setForeground(new Color(0, 255, 0));
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(Libre)) {
@@ -277,6 +323,9 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
         else if(e.getSource().equals(this.validerButton1)){
             validerRechercheGestionClient();
+        }
+        else if(e.getSource().equals(this.validerBouttonCreneau)){
+            validerAjoutCreneau();
         }
     }
 

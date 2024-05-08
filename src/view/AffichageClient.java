@@ -234,7 +234,6 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         LocalDate today = LocalDate.now();
         if(this.datePicker.getDate() != null) {
             if (this.datePicker.getDate().isBefore(today)) {
-
                 this.datePicker.setDate(today);
             }
         }

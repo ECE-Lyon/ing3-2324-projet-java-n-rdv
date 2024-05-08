@@ -4,6 +4,7 @@ import dao.*;
 import model.*;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,5 +155,21 @@ public class AffichageMedecinController {
         return tabId;
     }
 
+    public void creerCreneauLibre(Connection connection, String nomClinique, int heure, Date date, int duree){
+        CliniqueDao daoClinique = new CliniqueDaoImpl(connection) ;
+        AgendaDao daoAgenda = new AgendaDaoImpl(connection) ;
+        JointureDao daoJointure = new JointureDaoImpl(connection) ;
+        List<String> noms = new ArrayList<>() ;
+        noms.add(nomClinique) ;
 
+        try {
+            List<Clinique> cliniques = daoClinique.getCliniqueByName(noms);
+            List<Integer> idJointure = daoJointure.getIdJointures(this.session.getId(), cliniques.get(0).getIdClinique()) ;
+            for(int i = 0 ; i < duree ; i++) {
+                daoAgenda.addCreneau(heure + i, date, idJointure.get(0));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

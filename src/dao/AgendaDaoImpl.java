@@ -36,6 +36,15 @@ public class AgendaDaoImpl implements AgendaDao{
         return list ;
     }
 
+    public void addCreneau(int heure, Date date, int idJointure) throws SQLException {
+        try(PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO emploi_du_temps(idJointure, jour, heure) VALUES (?, ?, ?)")) {
+            preparedStatement.setInt(1, idJointure);
+            preparedStatement.setDate(2, date);
+            preparedStatement.setInt(3, heure);
+            preparedStatement.execute();
+        }
+    }
+
 
     public boolean supprimerCreneauById(int idCreneau) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM emploi_du_temps where idAgenda = ?")){
