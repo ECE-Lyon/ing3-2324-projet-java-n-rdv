@@ -74,6 +74,36 @@ public class ClientDaoImpl implements ClientDao {
     }
 
     @Override
+    public List<Integer> getListIdClientByIdRdv(int idRdv) throws SQLException {
+        List<Integer> listIdClients = new ArrayList<>();
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT idClient FROM rdv WHERE idRdv = ? ")){
+            preparedStatement.setInt(1, idRdv);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                listIdClients.add(resultSet.getInt("idClient"));
+            }
+        }
+        return listIdClients ;
+    }
+
+    @Override
+    public List<Client> getListClientById(int idClient) throws SQLException {
+        List<Client> listClient = new ArrayList<>();
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM clients WHERE idClient = ? ")){
+            preparedStatement.setInt(1, idClient);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                String nom = resultSet.getString("nom");
+                String prenom = resultSet.getString("prenom");
+                String mail = resultSet.getString("mail");
+                String mdp = resultSet.getString("mdp");
+                listClient.add(new Client(idClient, nom, prenom, mail, mdp)) ;
+            }
+        }
+        return listClient ;
+    }
+
+    @Override
     public void deleteClient(int id) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM clients where idClient = ?")) {
             preparedStatement.setInt(1, id);

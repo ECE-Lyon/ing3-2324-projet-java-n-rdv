@@ -12,6 +12,9 @@ public interface ClientDao{
     List<Client> getListClients(String n, String p, String m, int idOperation) throws SQLException ;
 
     Client getClientById(int idClient) throws SQLException ;
+    public List<Client> getListClientById(int idClient) throws SQLException;
+
+    List<Integer> getListIdClientByIdRdv(int idClient) throws SQLException;
 
     void deleteClient(int id) throws SQLException;
 

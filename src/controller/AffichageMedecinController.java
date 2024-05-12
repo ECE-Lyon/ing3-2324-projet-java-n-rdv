@@ -6,6 +6,8 @@ import model.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class AffichageMedecinController {
 
     private Medecin medecin ;
     private Session session;
+    private Rdv rdv;
     public AffichageMedecinController(Session s, Medecin m){
         this.medecin = m ;
         this.session = s ;
@@ -43,10 +46,6 @@ public class AffichageMedecinController {
         return this.medecin.getSpecification() ;
     }
 
-
-
-
-
     //Avoir le médecin actuellement connecté
     public Medecin getMedecinAndAllClinique(Connection connection){
         MedecinDao dao = new MedecinDaoImpl(connection) ;
@@ -56,6 +55,24 @@ public class AffichageMedecinController {
             throw new RuntimeException(e);
         }
         return this.medecin ;
+    }
+    //Avoir l'idJointure en partant du nom de la clinique sélectionné dans les filtres
+    public List<Integer> getIdJointureByNomClinique(Connection connection, String nomClini){
+        List<Integer> idJointures = new ArrayList<>();
+        CliniqueDao daoClini = new CliniqueDaoImpl(connection);
+        JointureDao daoJoint = new JointureDaoImpl(connection);
+        try {
+            for (int i = 0; i < this.medecin.getCliniques().size(); i++) {
+                if (nomClini.equals(this.medecin.getCliniques().get(i).getNom())) {
+                    int idClini = daoClini.getIdCliniqueByName(nomClini);
+                    int idMedecin = daoJoint.getIdMedecinByIdClinique(idClini);
+                    idJointures = daoJoint.getIdJointures(idMedecin, idClini);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return idJointures;
     }
 
     //Avoir juste 1 clinique d'un seul médecin (dans tabId, il y a idMedecin et idClinique)
@@ -141,8 +158,6 @@ public class AffichageMedecinController {
         return rdv ;
     }
 
-
-
     //Avoir l'id du medecin et de la clinique avec l'id de la Jointure medecin_clinique
     public int[] getIdMedecinCliniqueByIdJointure(Connection connection, int idJointure){
         JointureDao dao = new JointureDaoImpl(connection) ;
@@ -155,21 +170,47 @@ public class AffichageMedecinController {
         return tabId;
     }
 
-    public void creerCreneauLibre(Connection connection, String nomClinique, int heure, Date date, int duree){
-        CliniqueDao daoClinique = new CliniqueDaoImpl(connection) ;
-        AgendaDao daoAgenda = new AgendaDaoImpl(connection) ;
-        JointureDao daoJointure = new JointureDaoImpl(connection) ;
-        List<String> noms = new ArrayList<>() ;
-        noms.add(nomClinique) ;
+    public void creerCreneauLibre(Connection connection, String nomClinique, int heure, Date date, int duree) {
+        CliniqueDao daoClinique = new CliniqueDaoImpl(connection);
+        AgendaDao daoAgenda = new AgendaDaoImpl(connection);
+        JointureDao daoJointure = new JointureDaoImpl(connection);
+        List<String> noms = new ArrayList<>();
+        noms.add(nomClinique);
 
         try {
             List<Clinique> cliniques = daoClinique.getCliniqueByName(noms);
-            List<Integer> idJointure = daoJointure.getIdJointures(this.session.getId(), cliniques.get(0).getIdClinique()) ;
-            for(int i = 0 ; i < duree ; i++) {
+            List<Integer> idJointure = daoJointure.getIdJointures(this.session.getId(), cliniques.get(0).getIdClinique());
+            for (int i = 0; i < duree; i++) {
                 daoAgenda.addCreneau(heure + i, date, idJointure.get(0));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<Client> getInfoClient(Connection connection, int idRdv) {
+        ClientDao daoClient = new ClientDaoImpl(connection);
+        List<Client> listClientRdv = new ArrayList<>();
+        try {
+            for (int i = 0; i < daoClient.getListIdClientByIdRdv(idRdv).size(); i++) {
+                listClientRdv = daoClient.getListClientById(daoClient.getListIdClientByIdRdv(idRdv).get(i));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return listClientRdv;
+
+
+    }
+
+    public List<Rdv> getListRdvFlitre(Connection connection, String etat, Timestamp date, List<Integer> listIdJointure) {
+        RdvDao dao = new RdvDaoImpl(connection);
+        try {
+            return dao.getRdvFiltres(etat, date, listIdJointure);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }

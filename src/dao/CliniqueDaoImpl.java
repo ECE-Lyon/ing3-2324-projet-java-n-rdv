@@ -56,9 +56,36 @@ public class CliniqueDaoImpl implements CliniqueDao{
     }
 
     @Override
+    public int getIdCliniqueByName(String nom) throws SQLException {
+        int idClinique = 0;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT idClinique FROM cliniques WHERE nom = ?")) {
+            preparedStatement.setString(1, nom);
+            try (ResultSet result = preparedStatement.executeQuery()) {
+                while (result.next()) {
+                    idClinique = result.getInt("idClinique");
+                }
+            }
+        }
+        return idClinique;
+    }
+
+    @Override
     public List<String> getAllClinique() throws SQLException {
         List<String> list = new ArrayList<>( ) ;
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT nom FROM cliniques")){
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()){
+                    list.add(result.getString("nom")) ;
+                }
+            }
+        }
+        return list;
+    }
+    public List<String> getCliniqueNom(int idClinique) throws SQLException {
+        List<String> list = new ArrayList<>( ) ;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT nom FROM cliniques " +
+                "where idClinique = ?")){
+            preparedStatement.setInt(1, idClinique);
             try(ResultSet result = preparedStatement.executeQuery()) {
                 while(result.next()){
                     list.add(result.getString("nom")) ;

@@ -9,6 +9,7 @@ import model.Medecin;
 import model.MySql;
 
 import javax.swing.*;
+import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.sql.Date;
 import java.util.Comparator;
 import java.util.List;
+
+/** VOIR POUR LES COMBOBOXS , QUAND TU SELECTIONNES UN MEDECIN, TU AURAS DIRECTEMENT QUE LES CLINIQUES OU IL BOSSE, ET INVERSEMENT*/
 
 public class AffichageClient extends JFrame implements ActionListener, DateChangeListener {
     private AffichageClientController controller ;
