@@ -93,7 +93,6 @@ public class RdvDaoImpl implements RdvDao{
         }
     }
 
-
     public List<Rdv> getRdvLibreAvecFiltre(String medecin, String clinique, Date date) throws SQLException {
         List<Rdv> rdv = new ArrayList<>() ;
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rdv where idMedecin")){
@@ -110,6 +109,20 @@ public class RdvDaoImpl implements RdvDao{
             return rdv;
         }
     }
+
+    public List<Integer> getIdRDV(int idClient) throws SQLException {
+        List<Integer> list = new ArrayList<>( ) ;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rdv where idClient = ?")){
+            preparedStatement.setInt(1, idClient);
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()){
+                    list.add(result.getInt("idRdv"));
+                }
+            }
+        }
+        return list;
+    }
+
 
     public List<Rdv> getRdvFiltres(String etat, Timestamp date, List<Integer> listIdJointure) throws SQLException {
         List<Rdv> listRdv = new ArrayList<>();

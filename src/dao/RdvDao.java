@@ -18,5 +18,6 @@ public interface RdvDao {
 
     void deleteRdv(int id) throws SQLException;
     void updateRdv (Rdv rdv) throws SQLException;
+    List<Integer> getIdRDV(int idClient) throws SQLException;
 
 }

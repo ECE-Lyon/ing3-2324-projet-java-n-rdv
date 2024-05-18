@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.util.Collections;
 import java.util.List;
 
 public class AffichageClientController {
@@ -54,25 +55,39 @@ public class AffichageClientController {
             throw new RuntimeException(e);
         }
     }
+    public List<String> getHeure(Connection connection) {
+        ClientDao dao =new ClientDaoImpl(connection);
 
-    public String getNote(Connection connection){
-        ClientDao dao = new ClientDaoImpl(connection);
         try{
-            //System.out.println(this.client.getIdClient());
-            return dao.getNoteClient(this.client.getIdClient()) ;
+
+            return dao.getHeureClient(this.client.getIdClient());
+
+        }catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+    public List<String> getNote(Connection connection,int idrdv){
+        ClientDao dao = new ClientDaoImpl(connection);
+        try {
+            return dao.getNoteClient(idrdv);
+
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Integer> getidRDV(Connection connection){
+        RdvDao dao = new RdvDaoImpl(connection);
+        try{
+            return dao.getIdRDV(this.client.getIdClient()) ;
         }catch (SQLException e){
             throw new RuntimeException(e);
         }
     }
 
-    public String getHeure(Connection connection){
-        ClientDao dao =new ClientDaoImpl(connection);
-        try{
-            return dao.getHeureClient(this.client.getIdClient());
-        }catch(SQLException e){
-            throw new RuntimeException(e);
-        }
-    }
+
+
+
 
     ///Avoir l'ensemble des rendez-vous libre pour qu'un client puisse prendre rdv ensuite
     public List<Creneau> getRdvLibre(Connection connection, String nomPrenom, String nomClinique, Date date){

@@ -4,17 +4,17 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
 import com.github.lgooddatepicker.zinternaltools.DateChangeEvent;
 import controller.AffichageClientController;
-import model.Creneau;
-import model.Medecin;
-import model.MySql;
+import model.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.text.DateFormat;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.sql.Date;
 import java.util.Comparator;
 import java.util.List;
+import java.sql.Timestamp;
+
+import static java.awt.SystemColor.control;
 
 /** VOIR POUR LES COMBOBOXS , QUAND TU SELECTIONNES UN MEDECIN, TU AURAS DIRECTEMENT QUE LES CLINIQUES OU IL BOSSE, ET INVERSEMENT*/
 
@@ -37,12 +40,10 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
     private JButton rechercherButton;
     private DatePicker datePicker;
 
+    private JButton prendreCeRendezVousButton;
+    private JPanel historiquePanel;
     private JButton voirNoteButton;
-    private JButton voirNoteButton1;
-    private JButton voirNoteButton2;
-    private JButton voirNoteButton3;
-    private JLabel heure;
-    private JButton buttonNote;
+    private JComboBox comboBoxDate;
 
     public AffichageClient(AffichageClientController control){
         super("Page Client") ;
@@ -54,9 +55,20 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         this.setContentPane(this.panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        //ouvrir page note
+       /* buttonNote.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClientNote buttonNote = new ClientNote(control);
+                buttonNote.setVisible(true);
+            }
+        });*/
+        //afficher heure
 
 
         this.scrollPanel.setLayout(new GridBagLayout());
+        this.historiquePanel.setLayout(new GridLayout(0,1));
+
         JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
         label.setForeground(new Color(130, 145, 132, 255));
         this.scrollPanel.add(label) ;
@@ -66,6 +78,7 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
 
         //Ajouter les elements aux combo boxs
         List<String> list = new ArrayList<>() ;
+        List<String> list1 = new ArrayList<>() ;
         list = this.controller.getAllClinique(MySql.getConnection()) ;
         list.add(0, "-----") ;
         for(int i = 0 ; i < list.size() ; i++){
@@ -76,14 +89,33 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         for(int i = 0 ; i < list.size() ; i++){
             this.comboBoxMedecin.addItem(list.get(i));
         }
+        list = this.controller.getHeure(MySql.getConnection()) ;
 
+        List<Integer> rdvList= this.controller.getidRDV(MySql.getConnection()) ;
 
-        fonctionRaph();
-
-
+        List<String> listNote = new ArrayList<>();
+        for(int i = 0 ; i < rdvList.size() ; i++){
+            listNote = this.controller.getNote(MySql.getConnection(),rdvList.get(i));
+            this.historiquePanel.add(createPanel(list.get(i), listNote.get(0)));
+        }
         this.pack();
         this.setVisible(true);
     }
+
+    public JPanel createPanel(String date, String note) {
+
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(0, 40, 0));
+
+        JLabel label1 = new JLabel("date: " + date);
+        panel.add(label1);
+
+        JLabel label2 = new JLabel("note: " + note);
+        panel.add(label2);
+        return panel;
+    }
+
 
 
 
@@ -206,21 +238,6 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
             label.setForeground(new Color(133, 89, 89, 255));
             this.scrollPanel.add(label) ;
         }
-    }
-
-    public void fonctionRaph(){
-        //JButton buttonNote = new JButton("Note") ;
-        //ouvrir page note
-        buttonNote.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ClientNote buttonNote = new ClientNote(controller);
-                buttonNote.setVisible(true);
-            }
-        });
-        //afficher heure
-        String heureMedecin =this.controller.getHeure(MySql.getConnection());
-        this.heure.setText(heureMedecin);
     }
 
 
