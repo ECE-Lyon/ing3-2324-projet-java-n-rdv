@@ -57,9 +57,7 @@ public class AffichageClientController {
     }
     public List<String> getHeure(Connection connection) {
         ClientDao dao =new ClientDaoImpl(connection);
-
         try{
-
             return dao.getHeureClient(this.client.getIdClient());
 
         }catch(SQLException e){

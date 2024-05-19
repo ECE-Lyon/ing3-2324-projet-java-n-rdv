@@ -17,10 +17,8 @@ public class Main {
     public static void main(String[] args) {
         //Initialisation du mot de passe
         if(args[0].equals("0")){
-            MySql.setPassword("") ;
+            MySql.setPassword("root") ;
         }
-
-        MySql.setPassword("") ;
 
         //Creation de la session
         Session session = new Session() ;

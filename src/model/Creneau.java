@@ -37,4 +37,11 @@ public class Creneau {
     public int getTime() {
         return this.time;
     }
+
+    public String getDateAndTimeString(){
+        String jour = this.getDateString() ;
+
+
+        return jour + " " + this.time + ":00:00" ;
+    }
 }

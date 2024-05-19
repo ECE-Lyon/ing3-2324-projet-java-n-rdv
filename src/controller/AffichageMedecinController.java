@@ -65,7 +65,7 @@ public class AffichageMedecinController {
             for (int i = 0; i < this.medecin.getCliniques().size(); i++) {
                 if (nomClini.equals(this.medecin.getCliniques().get(i).getNom())) {
                     int idClini = daoClini.getIdCliniqueByName(nomClini);
-                    int idMedecin = daoJoint.getIdMedecinByIdClinique(idClini);
+                    int idMedecin = this.medecin.getIdMedecin() ;
                     idJointures = daoJoint.getIdJointures(idMedecin, idClini);
                 }
             }
@@ -176,7 +176,6 @@ public class AffichageMedecinController {
         JointureDao daoJointure = new JointureDaoImpl(connection);
         List<String> noms = new ArrayList<>();
         noms.add(nomClinique);
-
         try {
             List<Clinique> cliniques = daoClinique.getCliniqueByName(noms);
             List<Integer> idJointure = daoJointure.getIdJointures(this.session.getId(), cliniques.get(0).getIdClinique());
@@ -203,14 +202,59 @@ public class AffichageMedecinController {
 
     }
 
-    public List<Rdv> getListRdvFlitre(Connection connection, String etat, Timestamp date, List<Integer> listIdJointure) {
+    public List<Rdv> getListRdvFlitre(Connection connection, String etat, Date date, List<Integer> listIdJointure) {
         RdvDao dao = new RdvDaoImpl(connection);
         try {
             return dao.getRdvFiltres(etat, date, listIdJointure);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
 
 
+    public List<Creneau> getRdvLibre(Connection connection, String nomClinique, Date date){
+        String nomPrenom = this.medecin.getNom() + " " + this.medecin.getPrenom() ;
+        int idClinique = -999, idMedecin = -999, nbNull = 0;
+        String nomMedecin = null;
+        ///On vérifie que les critères du médecin et de la clinique ne sont pas vides (car elles peuvent l'être)
+        if(nomClinique != null){
+            List<String> nom = new ArrayList<>() ;
+            nom.add(nomClinique) ;
+            CliniqueDao daoClinique = new CliniqueDaoImpl(connection) ;
+            try {
+                List<Clinique> cliniques = daoClinique.getCliniqueByName(nom) ;
+                idClinique = cliniques.get(0).getIdClinique() ;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if(nomPrenom != null){
+            String[] parts = nomPrenom.split(" ");
+            nomMedecin = parts[0];
+            MedecinDao daoMedecin = new MedecinDaoImpl(connection) ;
+            try {
+                Medecin medecin = daoMedecin.getMedecinByName(nomMedecin) ;
+                idMedecin = medecin.getIdMedecin() ;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        //On cherche l'id (ou les ids) correspondant au medecin/clinique (ou toutes les cliniques d'un médecin ou tous les médecins d'une clinique)
+        JointureDao daoJointure = new JointureDaoImpl(connection);
+        AgendaDao daoAgenda = new AgendaDaoImpl(connection);
+
+        List<Integer> idJointures = new ArrayList<>() ;
+        List<Creneau> creneauLibre = new ArrayList<>() ;
+
+        //Avec l'idJointure, on cherche ensuite les créneaux de libre (on prend la date et l'heure
+        try {
+            idJointures = daoJointure.getIdJointures(idMedecin, idClinique) ;
+            creneauLibre = daoAgenda.getCreneauLibre(idJointures, date) ;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        //Recuperer la liste de rdv libre pour les afficher
+        return creneauLibre ;
     }
 }

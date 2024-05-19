@@ -55,19 +55,9 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         this.setContentPane(this.panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //ouvrir page note
-       /* buttonNote.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ClientNote buttonNote = new ClientNote(control);
-                buttonNote.setVisible(true);
-            }
-        });*/
-        //afficher heure
-
 
         this.scrollPanel.setLayout(new GridBagLayout());
-        this.historiquePanel.setLayout(new GridLayout(0,1));
+        this.historiquePanel.setLayout(new GridBagLayout());
 
         JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
         label.setForeground(new Color(130, 145, 132, 255));
@@ -89,35 +79,107 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         for(int i = 0 ; i < list.size() ; i++){
             this.comboBoxMedecin.addItem(list.get(i));
         }
+
+
+        Client client = this.controller.getClientConnecte(MySql.getConnection());
+        int idClient = client.getIdClient();
+        List<Integer> idJointure = this.controller.getIdJointure(MySql.getConnection(), idClient);
         list = this.controller.getHeure(MySql.getConnection()) ;
-
         List<Integer> rdvList= this.controller.getidRDV(MySql.getConnection()) ;
-
         List<String> listNote = new ArrayList<>();
-        for(int i = 0 ; i < rdvList.size() ; i++){
-            listNote = this.controller.getNote(MySql.getConnection(),rdvList.get(i));
-            this.historiquePanel.add(createPanel(list.get(i), listNote.get(0)));
-            afficherNomMedecinPourRdv();
+
+        afficherNomMedecinPourRdv();
+        if(!rdvList.isEmpty()) {
+            createTitle();
+            for (int i = 0; i < rdvList.size(); i++) {
+                int[] tabId = this.controller.getIdMedecinCliniqueByIdJointure(MySql.getConnection(), idJointure.get(i));
+                Medecin medecin = this.controller.getMedecinAndOneClinique(MySql.getConnection(), tabId);
+
+                listNote = this.controller.getNote(MySql.getConnection(), rdvList.get(i));
+                createPanel(list.get(i), listNote.get(0), medecin.getNom() + " " + medecin.getPrenom(), medecin.getCliniques().get(0).getNom() , i+1);
+            }
+        }
+        else {
+            JLabel label2 = new JLabel("Aucun rendez-vous passés et futurs !", JLabel.CENTER) ;
+            label2.setForeground(new Color(130, 145, 132, 255));
+            this.historiquePanel.add(label2) ;
         }
         this.pack();
         this.setVisible(true);
     }
 
-    public JPanel createPanel(String date, String note) {
-
-
+    public void createPanel(String date, String note, String nomMedecin, String nomClinique, int i) {
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = i;
+        constraints.weightx = 0;
+        constraints.weighty = 4;
+        constraints.fill = GridBagConstraints.BOTH;
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout(0, 40, 0));
 
-        JLabel label1 = new JLabel("date: " + date);
-        panel.add(label1);
 
-        JLabel label2 = new JLabel("note: " + note);
-        panel.add(label2);
-        return panel;
+        JLabel label4 = new JLabel(nomClinique, JLabel.CENTER);
+        constraints.gridx = 0;
+        this.historiquePanel.add(label4, constraints);
+
+        JLabel label3 = new JLabel(nomMedecin, JLabel.CENTER);
+        constraints.gridx = 1;
+        this.historiquePanel.add(label3, constraints);
+
+        JLabel label2 = new JLabel(note, JLabel.CENTER);
+        constraints.gridx = 2;
+        this.historiquePanel.add(label2, constraints);
+
+        JLabel label1 = new JLabel(date, JLabel.CENTER);
+        constraints.gridx = 3;
+        this.historiquePanel.add(label1, constraints);
+
     }
 
+    public void createTitle(){
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.33;
+        constraints.weighty = 0.5;
+        constraints.fill = GridBagConstraints.BOTH;
 
+        JLabel label = new JLabel("Clinique :", JLabel.CENTER) ;
+        label.setForeground(new Color(87, 120, 147));
+        this.historiquePanel.add(label, constraints) ;
+
+        constraints.gridx = 1 ;
+        JLabel label2 = new JLabel("Medecin :", JLabel.CENTER) ;
+        label2.setForeground(new Color(87, 120, 147));
+        this.historiquePanel.add(label2, constraints) ;
+
+        constraints.gridx = 2;
+        JLabel label3 = new JLabel("Date :", JLabel.CENTER);
+        label3.setForeground(new Color(87, 120, 147));
+        this.historiquePanel.add(label3, constraints);
+
+        constraints.gridx = 3;
+        JLabel label4 = new JLabel("Note :", JLabel.CENTER);
+        label4.setForeground(new Color(87, 120, 147));
+        this.historiquePanel.add(label4, constraints);
+
+
+        JSeparator line = new JSeparator(SwingConstants.HORIZONTAL);
+        JSeparator line2 = new JSeparator(SwingConstants.HORIZONTAL);
+        JSeparator line3 = new JSeparator(SwingConstants.HORIZONTAL);
+        JSeparator line4 = new JSeparator(SwingConstants.HORIZONTAL);
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        this.historiquePanel.add(line, constraints) ;
+        constraints.gridx = 1;
+        this.historiquePanel.add(line2, constraints) ;
+        constraints.gridx = 2;
+        this.historiquePanel.add(line3, constraints) ;
+        constraints.gridx = 3;
+        this.historiquePanel.add(line4, constraints) ;
+    }
 
 
     public void validerRecherche(){
@@ -250,10 +312,7 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         for(int i=0 ; i < idJointure.size() ; i++){
             int[] tabId = this.controller.getIdMedecinCliniqueByIdJointure(MySql.getConnection(), idJointure.get(i));
             Medecin medecin = this.controller.getMedecinAndOneClinique(MySql.getConnection(), tabId);
-
-            // Affichage du nom du médecin à côté de l'heure
             String nomMedecin = medecin.getNom() + " " + medecin.getPrenom();
-            //setText("Médecin : " + nomMedecin);
         }
 
     }

@@ -2,6 +2,12 @@ package model;
 
 import model.Compte ;
 
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Observable;
 
 /** Pour avoir accès à la personne actuellement connecté ainsi que ces informations
@@ -55,3 +61,37 @@ public class Session extends Observable {
         this.id = id;
     }
 }
+
+
+
+
+/*public JPanel createPanel(String nomClinique, Timestamp dateRdv, Client client, String etat, int i) {
+    GridBagConstraints constraints = new GridBagConstraints();
+    constraints.gridx = 0;
+    constraints.gridy = i;
+    constraints.weightx = 1;
+    constraints.weighty = 4;
+    constraints.fill = GridBagConstraints.BOTH;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String dateString = sdf.format(dateRdv);
+
+    JPanel panel = new JPanel();
+    this.rdvsMedecin.setLayout(new FlowLayout(FlowLayout.CENTER, 130, 0));
+
+    JLabel label1 = new JLabel(nomClinique);
+    panel.add(label1, CENTER_ALIGNMENT);
+
+    JLabel label2 = new JLabel(dateString);
+    panel.add(label2,CENTER_ALIGNMENT);
+
+    if (client != null){
+        JLabel label3 = new JLabel(client.getPrenom() + " " + client.getNom());
+        panel.add(label3, CENTER_ALIGNMENT);
+    }
+    JLabel label4 = new JLabel(etat);
+    panel.add(label4, CENTER_ALIGNMENT);
+
+    Border bord = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED) ;
+    panel.setBorder(bord);
+    return panel;
+}*/

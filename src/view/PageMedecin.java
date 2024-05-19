@@ -3,10 +3,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
 import com.github.lgooddatepicker.zinternaltools.DateChangeEvent;
 import controller.AffichageMedecinController;
-import model.Client;
-import model.Medecin;
-import model.MySql;
-import model.Rdv;
+import model.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -15,15 +12,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +47,6 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JPanel JPanel4;
     private JLabel Spe;
     private DatePicker DateBox1;
-    private DatePicker DateBox2;
 
     //GESTION CLIENT
     private JPanel gestionClient;
@@ -92,11 +85,14 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.panelClinique.setLayout(new GridLayout(0, 1));
-        this.rdvsMedecin.setLayout(new GridLayout(0, 1));
+        this.rdvsMedecin.setLayout(new GridBagLayout());
         this.scrollPanel.setLayout(new GridLayout(0, 1));
         JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
         label.setForeground(new Color(130, 145, 132, 255));
         this.scrollPanel.add(label) ;
+        JLabel label2 = new JLabel("Faire une recherche", JLabel.CENTER) ;
+        label2.setForeground(new Color(130, 145, 132, 255));
+        this.rdvsMedecin.add(label2) ;
 
         //LISTENER
         this.Libre.addActionListener(this);
@@ -116,7 +112,6 @@ public class PageMedecin extends JFrame implements ActionListener {
                 }
             }
         });
-
 
 
         this.controller.getMedecinAndAllClinique(connection) ;
@@ -185,11 +180,14 @@ public class PageMedecin extends JFrame implements ActionListener {
         return true ;
     }
 
-    public void uncheckBox(JCheckBox checkbox){
+    public void checkBox(JCheckBox checkbox){
         this.Libre.setSelected(false);
         this.Réservé.setSelected(false);
         this.Archivé.setSelected(false);
         checkbox.setSelected(true);
+    }
+    public void uncheckBox(JCheckBox checkbox){
+        checkbox.setSelected(false);
     }
 
     public void actualiserPageGestionClient(){
@@ -239,75 +237,38 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
     }
 
-    public void validerBoutonFiltreRdv(String etatFiltre) {
-        this.rdvsMedecin.removeAll();
-        Object valeur = comboBox1.getSelectedItem();
-        String nomClinique = valeur.toString();
-        if (this.DateBox1.getDate() != null && (this.Réservé.isSelected() || this.Archivé.isSelected())) {
-            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, getDateHeure(),
-                    this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
-            if (!rdvs.isEmpty()) {
-                for (int i = 0; i < rdvs.size(); i++) {
-                    List<Client> listInfoClient = this.controller.getInfoClient(MySql.getConnection(), rdvs.get(i).getIdRdv());
-                    for (int j = 0; j < listInfoClient.size(); j++) {
-                        this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), listInfoClient.get(j)));
-                    }
-                }
-            }
-        }
-        else if (this.DateBox1.getDate() != null ) {
-            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, getDateHeure(),
-                    this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
-            if (!rdvs.isEmpty()) {
-                for (int i = 0; i < rdvs.size(); i++) {
-                    List<Client> listInfoClient = this.controller.getInfoClient(MySql.getConnection(), rdvs.get(i).getIdRdv());
-                    for (int j = 0; j < listInfoClient.size(); j++) {
-                        this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), listInfoClient.get(j)));
-                    }
-                }
-            }
-        }
-        else if (this.DateBox1.getDate() == null && (this.Réservé.isSelected() || this.Archivé.isSelected())) {
-            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, null,
-                    this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
-            if (!rdvs.isEmpty()) {
-                for (int i = 0; i < rdvs.size(); i++) {
-                    List<Client> listInfoClient = this.controller.getInfoClient(MySql.getConnection(), rdvs.get(i).getIdRdv());
-                    for (int j = 0; j < listInfoClient.size(); j++) {
-                        this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), listInfoClient.get(j)));
-                    }
-                }
-            }
-        }
-        else if (this.Libre.isSelected()){
-            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, null,
-                    this.controller.getIdJointureByNomClinique(MySql.getConnection(),nomClinique));
-            if(!rdvs.isEmpty()){
-                for (int i = 0; i< rdvs.size(); i++){
-                    this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), null));
-                }
-            }
-        }
-    }
-
-    public JPanel createPanel(String nomClinique, Timestamp dateRdv, Client client) {
-
+    public void createPanel(String nomClinique, Timestamp dateRdv, Client client, String etat, int i) {
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = i;
+        constraints.weightx = 1;
+        constraints.weighty = 4;
+        constraints.fill = GridBagConstraints.BOTH;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateString = sdf.format(dateRdv);
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(0, 40, 0));
 
-        JLabel label1 = new JLabel("Clinique: " + nomClinique);
-        panel.add(label1);
+        JLabel label1 = new JLabel(nomClinique, JLabel.CENTER);
+        constraints.gridx = 0;
+        this.rdvsMedecin.add(label1, constraints);
 
-        JLabel label2 = new JLabel("Date: " + dateString);
-        panel.add(label2);
+        JLabel label2 = new JLabel(dateString,JLabel.CENTER);
+        constraints.gridx = 1;
+        this.rdvsMedecin.add(label2, constraints);
 
         if (client != null){
-            JLabel label3 = new JLabel("Client : "+ client.getPrenom() + " " + client.getNom());
-            panel.add(label3);
+            JLabel label3 = new JLabel(client.getPrenom() + " " + client.getNom(), JLabel.CENTER);
+            constraints.gridx = 2;
+            this.rdvsMedecin.add(label3, constraints);
+
+            JLabel label4 = new JLabel(etat, JLabel.CENTER);
+            constraints.gridx = 3;
+            this.rdvsMedecin.add(label4, constraints);
         }
-        return panel;
+        else{
+            JLabel label4 = new JLabel(etat, JLabel.CENTER);
+            constraints.gridx = 2;
+            this.rdvsMedecin.add(label4, constraints);
+        }
     }
 
 
@@ -378,21 +339,125 @@ public class PageMedecin extends JFrame implements ActionListener {
     }
 
 
-    public Timestamp getDateHeure(){
-        try {
-            String pattern = "yyyy-MM-dd";
-            String patternTimeStamp = " 00:00:00";
-            DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
-            this.DateBox1.getDate().format(df);
-            String dateModifie = this.DateBox1.getDate().format(df) + patternTimeStamp;
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            java.util.Date parsedDate = dateFormat.parse(dateModifie);
-            Timestamp timestamp = new Timestamp(parsedDate.getTime());
-            return timestamp;
-        } catch (ParseException e) {
-            System.out.println("Erreur de parsing de la date : " + e.getMessage());
+    public Date getDateHeure(){
+        String pattern = "yyyy-MM-dd";
+        DateTimeFormatter df =  DateTimeFormatter.ofPattern(pattern) ;
+        LocalDate date = null ;
+        if(this.DateBox1.getDate() != null) {
+            date = LocalDate.parse(this.DateBox1.getDate().format(df)) ;
+            Date sqlDate = Date.valueOf(date) ;
+            return sqlDate;
         }
-        return null;
+        else {
+            return null;
+        }
+    }
+
+    public void validerBoutonFiltreRdv(String etatFiltre) {
+        this.rdvsMedecin.removeAll();
+        Object valeur = comboBox1.getSelectedItem();
+        String nomClinique = valeur.toString();
+
+
+        if(etatFiltre == null){
+            JLabel label = new JLabel("Veuillez remplir un filtre d'état du RDV !", JLabel.CENTER) ;
+            label.setForeground(new Color(255, 0, 0));
+            this.rdvsMedecin.add(label) ;
+            actualiserPageGestionClient();
+        }
+        else if (etatFiltre != "Libre") {
+            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, getDateHeure(), this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
+            if (!rdvs.isEmpty()) {
+                createTitle(true);
+                for (int i = 0; i < rdvs.size(); i++) {
+                    List<Client> listInfoClient = this.controller.getInfoClient(MySql.getConnection(), rdvs.get(i).getIdRdv());
+                    for (int j = 0; j < listInfoClient.size(); j++) {
+                        createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), listInfoClient.get(j), etatFiltre, i+1) ;
+                    }
+                }
+            } else {
+                JLabel label = new JLabel("Aucun rendez-vous trouvé avec ces critères !", JLabel.CENTER);
+                label.setForeground(new Color(159, 0, 13));
+                this.rdvsMedecin.add(label);
+            }
+        }
+        else {
+            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, getDateHeure(), this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
+            List<Creneau> creneauLibre = this.controller.getRdvLibre(MySql.getConnection(), nomClinique, getDateHeure()) ;
+            if(!creneauLibre.isEmpty()){
+                createTitle(false);
+                for (int i = 0; i< creneauLibre.size(); i++){
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Timestamp timestamp = null ;
+                    try {
+                        timestamp = new Timestamp(dateFormat.parse(creneauLibre.get(i).getDateAndTimeString()).getTime());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    createPanel(nomClinique, timestamp , null, etatFiltre, i+1);
+                }
+            }
+            else {
+                JLabel label = new JLabel("Aucun rendez-vous trouvé avec ces critères !", JLabel.CENTER);
+                label.setForeground(new Color(159, 0, 13));
+                this.rdvsMedecin.add(label) ;
+            }
+        }
+        this.rdvsMedecin.revalidate();
+        this.rdvsMedecin.repaint();
+    }
+
+    public void createTitle(boolean client){
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.33;
+        constraints.weighty = 0.5;
+        constraints.fill = GridBagConstraints.BOTH;
+
+        JLabel label = new JLabel("Clinique :", JLabel.CENTER) ;
+        label.setForeground(new Color(87, 120, 147));
+        this.rdvsMedecin.add(label, constraints) ;
+
+        constraints.gridx = 1 ;
+        JLabel label2 = new JLabel("Date :", JLabel.CENTER) ;
+        label2.setForeground(new Color(87, 120, 147));
+        this.rdvsMedecin.add(label2, constraints) ;
+
+        if(client == true) {
+            constraints.gridx = 2;
+            JLabel label3 = new JLabel("Client :", JLabel.CENTER);
+            label3.setForeground(new Color(87, 120, 147));
+            this.rdvsMedecin.add(label3, constraints);
+
+            constraints.gridx = 3;
+            JLabel label4 = new JLabel("Etat :", JLabel.CENTER);
+            label4.setForeground(new Color(87, 120, 147));
+            this.rdvsMedecin.add(label4, constraints);
+
+            JSeparator line4 = new JSeparator(SwingConstants.HORIZONTAL);
+            constraints.gridy = 1;
+            constraints.gridx = 3;
+            this.rdvsMedecin.add(line4, constraints) ;
+        }
+        else{
+            constraints.gridx = 2;
+            JLabel label3 = new JLabel("Client :", JLabel.CENTER);
+            label3.setForeground(new Color(87, 120, 147));
+            this.rdvsMedecin.add(label3, constraints);
+        }
+
+        JSeparator line = new JSeparator(SwingConstants.HORIZONTAL);
+        JSeparator line2 = new JSeparator(SwingConstants.HORIZONTAL);
+        JSeparator line3 = new JSeparator(SwingConstants.HORIZONTAL);
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        this.rdvsMedecin.add(line, constraints) ;
+        constraints.gridx = 1;
+        this.rdvsMedecin.add(line2, constraints) ;
+        constraints.gridx = 2;
+        this.rdvsMedecin.add(line3, constraints) ;
     }
 
     @Override
@@ -400,16 +465,22 @@ public class PageMedecin extends JFrame implements ActionListener {
 
         if (e.getSource().equals(Libre)) {
             this.Libre.setName("Libre");
-            //int idJointure = this.controller.getIdJointRdv(MySql.getConnection(), this.Libre.getName());
-            uncheckBox(Libre);
+            if(this.Libre.isSelected()){
+                checkBox(this.Libre);
+            }
+
         }
         else if (e.getSource().equals(Réservé)) {
             this.Réservé.setName("Reserve");
-            uncheckBox(Réservé);
+            if(this.Réservé.isSelected()){
+                checkBox(this.Réservé);
+            }
         }
         else if (e.getSource().equals(Archivé)) {
             this.Archivé.setName("Archive");
-            uncheckBox(Archivé);
+            if(this.Archivé.isSelected()){
+                checkBox(this.Archivé);
+            }
         }
         else if(e.getSource().equals(this.ajouterUneAutreCliniqueButton)){
             addComboBoxAjouterClinique();
@@ -427,13 +498,6 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
         else if(e.getSource().equals(this.validerBouttonCreneau)){
             validerAjoutCreneau();
-        }
-        else if (e.getSource().equals(this.comboBox1)){
-            Object valeur = comboBox1.getSelectedItem();
-            if(valeur != null){
-                String cliniSelec = valeur.toString();
-                this.controller.getIdJointureByNomClinique(MySql.getConnection(),cliniSelec);
-            }
         }
         else if (e.getSource().equals(this.validerButton)){
             if (this.Libre.isSelected()){

@@ -21,7 +21,7 @@ public class AgendaDaoImpl implements AgendaDao{
     public List<Creneau> getCreneauLibre(List<Integer> idJointures, Date date) throws SQLException {
         List<Creneau> list = new ArrayList<>() ;
         for(int i = 0 ; i < idJointures.size() ; i++) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM emploi_du_temps WHERE idJointure = ? AND jour = ?")) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM emploi_du_temps WHERE idJointure = ? AND jour = COALESCE(?, jour)")) {
                 preparedStatement.setInt(1, idJointures.get(i));
                 preparedStatement.setDate(2, date);
 
@@ -53,4 +53,5 @@ public class AgendaDaoImpl implements AgendaDao{
             else {return false ;}
         }
     }
+
 }
