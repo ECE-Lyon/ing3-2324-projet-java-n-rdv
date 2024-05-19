@@ -1,5 +1,10 @@
 package dao;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import model.Clinique;
+import model.Medecin;
+import model.Rdv;
+import model.Client;
 import model.*;
 
 import java.sql.*;
@@ -12,7 +17,19 @@ import java.util.List;
 public class RdvDaoImpl implements RdvDao{
     private Connection connection;
     public RdvDaoImpl(Connection connection){this.connection = connection;}
-
+    @Override
+    public int getIdJointure(Rdv rdv, int idRdv) throws SQLException{
+        int idJointure = 0;
+        try(PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT idJointure FROM medecin_clinique " +
+                "where idRdv = ?")){
+            preparedStatement1.setInt(1, rdv.getIdRdv());
+            ResultSet resultSet = preparedStatement1.executeQuery();
+            while (resultSet.next()){
+                idJointure = resultSet.getInt(5);
+            }
+        }
+        return idJointure;
+    }
     @Override
     public void addRdv(Creneau creneau, int idClient) throws SQLException {
         Calendar calendar = Calendar.getInstance();
@@ -27,8 +44,7 @@ public class RdvDaoImpl implements RdvDao{
             preparedStatement.setInt(3, idClient);
             preparedStatement.setInt(4, creneau.getIdJointure());
             preparedStatement.setString(5, "Reserve");
-            preparedStatement.execute();
-        }
+    }
     }
 
     @Override
@@ -54,7 +70,7 @@ public class RdvDaoImpl implements RdvDao{
         try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE rdv SET idRdv = ?, note = ?, heure = ?")){
             preparedStatement.setInt(1,rdv.getIdRdv());
             preparedStatement.setString(2, rdv.getNote());
-            /*preparedStatement.setDate(3,rdv.getDate());*/
+            preparedStatement.setDate(3,null);
             preparedStatement.execute();
         }
     }
@@ -77,7 +93,6 @@ public class RdvDaoImpl implements RdvDao{
         }
     }
 
-
     public List<Rdv> getRdvLibreAvecFiltre(String medecin, String clinique, Date date) throws SQLException {
         List<Rdv> rdv = new ArrayList<>() ;
         try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rdv where idMedecin")){
@@ -93,6 +108,49 @@ public class RdvDaoImpl implements RdvDao{
             }
             return rdv;
         }
+    }
+
+    public List<Integer> getIdRDV(int idClient) throws SQLException {
+        List<Integer> list = new ArrayList<>( ) ;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rdv where idClient = ?")){
+            preparedStatement.setInt(1, idClient);
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()){
+                    list.add(result.getInt("idRdv"));
+                }
+            }
+        }
+        return list;
+    }
+
+
+    public List<Rdv> getRdvFiltres(String etat, Timestamp date, List<Integer> listIdJointure) throws SQLException {
+        List<Rdv> listRdv = new ArrayList<>();
+        for (int i = 0; i < listIdJointure.size(); i++) {
+            try (PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT * FROM rdv WHERE " +
+                    "Etat = COALESCE(?, Etat) AND heure = COALESCE(?, heure) AND idJointure = COALESCE(?, idJointure)")) {
+                if (etat == null) {
+                    preparedStatement1.setString(1, null);
+                } else {
+                    preparedStatement1.setString(1, etat);
+                }
+                if (date == null) {
+                    preparedStatement1.setString(2, null);
+                } else {
+                    preparedStatement1.setTimestamp(2, date);
+                }
+                if (listIdJointure == null) {
+                    preparedStatement1.setString(3, null);
+                } else {
+                    preparedStatement1.setInt(3, listIdJointure.get(i));
+                }
+                ResultSet resultSet = preparedStatement1.executeQuery();
+                while (resultSet.next()) {
+                    listRdv.add(new Rdv(resultSet.getInt("idRdv"), resultSet.getInt("idJointure"), resultSet.getString("note"), resultSet.getString("Etat"), resultSet.getTimestamp("heure")));
+                }
+            }
+        }
+        return listRdv;
     }
 
 

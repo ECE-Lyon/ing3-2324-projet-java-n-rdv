@@ -15,6 +15,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +42,10 @@ public class PageMedecin extends JFrame implements ActionListener {
     private JComboBox comboBox1;
     private JRadioButton tousLesRendezVousRadioButton;
     private JButton validerButton;
+    private JScrollPane resultatRdv;
+    private JPanel rdvsMedecin;
+
+
     private JFormattedTextField mdpMed;
     private JFormattedTextField speMed;
     private JButton validerAjouterMedecin;
@@ -82,6 +92,7 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.panelClinique.setLayout(new GridLayout(0, 1));
+        this.rdvsMedecin.setLayout(new GridLayout(0, 1));
         this.scrollPanel.setLayout(new GridLayout(0, 1));
         JLabel label = new JLabel("Faire une recherche", JLabel.CENTER) ;
         label.setForeground(new Color(130, 145, 132, 255));
@@ -96,7 +107,6 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.validerButton1.addActionListener(this);
         this.validerBouttonCreneau.addActionListener(this);
         this.comboBox1.addActionListener(this);
-        this.tousLesRendezVousRadioButton.addActionListener(this);
         this.validerButton.addActionListener(this);
         this.datePickerCreneau.addDateChangeListener(new DateChangeListener() {
             @Override
@@ -229,6 +239,77 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
     }
 
+    public void validerBoutonFiltreRdv(String etatFiltre) {
+        this.rdvsMedecin.removeAll();
+        Object valeur = comboBox1.getSelectedItem();
+        String nomClinique = valeur.toString();
+        if (this.DateBox1.getDate() != null && (this.Réservé.isSelected() || this.Archivé.isSelected())) {
+            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, getDateHeure(),
+                    this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
+            if (!rdvs.isEmpty()) {
+                for (int i = 0; i < rdvs.size(); i++) {
+                    List<Client> listInfoClient = this.controller.getInfoClient(MySql.getConnection(), rdvs.get(i).getIdRdv());
+                    for (int j = 0; j < listInfoClient.size(); j++) {
+                        this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), listInfoClient.get(j)));
+                    }
+                }
+            }
+        }
+        else if (this.DateBox1.getDate() != null ) {
+            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, getDateHeure(),
+                    this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
+            if (!rdvs.isEmpty()) {
+                for (int i = 0; i < rdvs.size(); i++) {
+                    List<Client> listInfoClient = this.controller.getInfoClient(MySql.getConnection(), rdvs.get(i).getIdRdv());
+                    for (int j = 0; j < listInfoClient.size(); j++) {
+                        this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), listInfoClient.get(j)));
+                    }
+                }
+            }
+        }
+        else if (this.DateBox1.getDate() == null && (this.Réservé.isSelected() || this.Archivé.isSelected())) {
+            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, null,
+                    this.controller.getIdJointureByNomClinique(MySql.getConnection(), nomClinique));
+            if (!rdvs.isEmpty()) {
+                for (int i = 0; i < rdvs.size(); i++) {
+                    List<Client> listInfoClient = this.controller.getInfoClient(MySql.getConnection(), rdvs.get(i).getIdRdv());
+                    for (int j = 0; j < listInfoClient.size(); j++) {
+                        this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), listInfoClient.get(j)));
+                    }
+                }
+            }
+        }
+        else if (this.Libre.isSelected()){
+            List<Rdv> rdvs = this.controller.getListRdvFlitre(MySql.getConnection(), etatFiltre, null,
+                    this.controller.getIdJointureByNomClinique(MySql.getConnection(),nomClinique));
+            if(!rdvs.isEmpty()){
+                for (int i = 0; i< rdvs.size(); i++){
+                    this.rdvsMedecin.add(createPanel(nomClinique, rdvs.get(i).getDateTimeStamp(), null));
+                }
+            }
+        }
+    }
+
+    public JPanel createPanel(String nomClinique, Timestamp dateRdv, Client client) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = sdf.format(dateRdv);
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(0, 40, 0));
+
+        JLabel label1 = new JLabel("Clinique: " + nomClinique);
+        panel.add(label1);
+
+        JLabel label2 = new JLabel("Date: " + dateString);
+        panel.add(label2);
+
+        if (client != null){
+            JLabel label3 = new JLabel("Client : "+ client.getPrenom() + " " + client.getNom());
+            panel.add(label3);
+        }
+        return panel;
+    }
+
 
     /// La fonction pour ajouter les clients en résultat de recherche (et avoir l'historique)
     public JPanel ajouterBouttonDossierClient(String nom, String prenom, String mail, int idClient)  {
@@ -296,10 +377,30 @@ public class PageMedecin extends JFrame implements ActionListener {
         this.labelReussi.setForeground(new Color(0, 255, 0));
     }
 
+
+    public Timestamp getDateHeure(){
+        try {
+            String pattern = "yyyy-MM-dd";
+            String patternTimeStamp = " 00:00:00";
+            DateTimeFormatter df = DateTimeFormatter.ofPattern(pattern);
+            this.DateBox1.getDate().format(df);
+            String dateModifie = this.DateBox1.getDate().format(df) + patternTimeStamp;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            java.util.Date parsedDate = dateFormat.parse(dateModifie);
+            Timestamp timestamp = new Timestamp(parsedDate.getTime());
+            return timestamp;
+        } catch (ParseException e) {
+            System.out.println("Erreur de parsing de la date : " + e.getMessage());
+        }
+        return null;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource().equals(Libre)) {
             this.Libre.setName("Libre");
+            //int idJointure = this.controller.getIdJointRdv(MySql.getConnection(), this.Libre.getName());
             uncheckBox(Libre);
         }
         else if (e.getSource().equals(Réservé)) {
@@ -326,6 +427,25 @@ public class PageMedecin extends JFrame implements ActionListener {
         }
         else if(e.getSource().equals(this.validerBouttonCreneau)){
             validerAjoutCreneau();
+        }
+        else if (e.getSource().equals(this.comboBox1)){
+            Object valeur = comboBox1.getSelectedItem();
+            if(valeur != null){
+                String cliniSelec = valeur.toString();
+                this.controller.getIdJointureByNomClinique(MySql.getConnection(),cliniSelec);
+            }
+        }
+        else if (e.getSource().equals(this.validerButton)){
+            if (this.Libre.isSelected()){
+                validerBoutonFiltreRdv(this.Libre.getName());
+            } else if (this.Réservé.isSelected()) {
+                validerBoutonFiltreRdv(this.Réservé.getName());
+            } else if (this.Archivé.isSelected()) {
+                validerBoutonFiltreRdv(this.Archivé.getName());
+            }
+            else {
+                validerBoutonFiltreRdv(null);
+            }
         }
     }
 

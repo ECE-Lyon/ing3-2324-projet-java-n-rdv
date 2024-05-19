@@ -74,6 +74,36 @@ public class ClientDaoImpl implements ClientDao {
     }
 
     @Override
+    public List<Integer> getListIdClientByIdRdv(int idRdv) throws SQLException {
+        List<Integer> listIdClients = new ArrayList<>();
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT idClient FROM rdv WHERE idRdv = ? ")){
+            preparedStatement.setInt(1, idRdv);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                listIdClients.add(resultSet.getInt("idClient"));
+            }
+        }
+        return listIdClients ;
+    }
+
+    @Override
+    public List<Client> getListClientById(int idClient) throws SQLException {
+        List<Client> listClient = new ArrayList<>();
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM clients WHERE idClient = ? ")){
+            preparedStatement.setInt(1, idClient);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                String nom = resultSet.getString("nom");
+                String prenom = resultSet.getString("prenom");
+                String mail = resultSet.getString("mail");
+                String mdp = resultSet.getString("mdp");
+                listClient.add(new Client(idClient, nom, prenom, mail, mdp)) ;
+            }
+        }
+        return listClient ;
+    }
+
+    @Override
     public void deleteClient(int id) throws SQLException{
         try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM clients where idClient = ?")) {
             preparedStatement.setInt(1, id);
@@ -91,28 +121,35 @@ public class ClientDaoImpl implements ClientDao {
             preparedStatement.execute();
         }
     }
-    public String getNoteClient(int id) throws SQLException {
-        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT note FROM rdv where idClient = ?")){
+    public List<String> getNoteClient(int id) throws SQLException {
+        List<String> list = new ArrayList<>();
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT note FROM rdv where idRdv = ?")){
             preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if  (resultSet.next()){
-             return resultSet.getString("note");
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                while  (resultSet.next()){
+                    list.add(resultSet.getString("note"));
+                }
             }
-            return null;
+            return list;
         }
     }
 
-    public String getHeureClient(int id) throws SQLException {
-        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT heure FROM rdv where idClient = ?")){
+    public List<String> getHeureClient(int id) throws SQLException {
+        List<String> list = new ArrayList<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT heure FROM rdv where idClient = ?")) {
             preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if  (resultSet.next()){
-                return resultSet.getString("heure");
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    list.add(resultSet.getString("heure"));
+                }
             }
-            return null;
+
+            return list;
         }
 
     }
+
+
 
 
     public List<String> switchCase(String n, String p, String m, int idOperation){

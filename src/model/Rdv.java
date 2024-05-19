@@ -7,12 +7,15 @@ public class Rdv {
     private Timestamp dateHeure;
     private String note;
     private String etatRdv;
+
     private int idRdv;
+
+
     private int idJointure;
     private Client client  ;
 
 
-    public Rdv(int idRdv, int idJointure, String note,  String etat,Timestamp dateHeure){
+    public Rdv(int idRdv, int idJointure, String note, String etat,Timestamp dateHeure){
         this.idRdv = idRdv;
         this.idJointure = idJointure;
         this.note = note;
@@ -25,11 +28,11 @@ public class Rdv {
     public void setEtat(String etat){ this.etatRdv = etat ;}
     public String getEtat(){ return this.etatRdv ;}
 
-    public int getIdRdv() {
-        return idRdv;
-    }
     public void setIdRdv(int idRdv) {
         this.idRdv = idRdv;
+    }
+    public int getIdRdv() {
+        return idRdv;
     }
 
     public void setNote(String note) {
@@ -70,4 +73,19 @@ public class Rdv {
         this.client = client;
     }
     public Client getRdvClient(){ return this.client ;}
+
+    public String getEtatRdv() {
+        return etatRdv;
+    }
+
+    public void setEtatRdv(String etatRdv) {
+        this.etatRdv = etatRdv;
+    }
+
+    public void setIdJointure(int idJointure) {
+        this.idJointure = idJointure;
+    }
+
+
+
 }

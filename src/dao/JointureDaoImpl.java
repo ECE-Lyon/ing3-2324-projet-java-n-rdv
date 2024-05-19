@@ -65,6 +65,17 @@ public class JointureDaoImpl implements JointureDao {
             return ids ;
         }
     }
+    public int getIdMedecinByIdClinique(int idClinique) throws SQLException{
+        int idMedecin = 0;
+        try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM medecin_clinique where idClinique = ?")){
+            preparedStatement.setInt(1, idClinique);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                idMedecin = resultSet.getInt("idMedecin");
+            }
+            return idMedecin ;
+        }
+    }
     public List<Integer> getIdJointuresByIdClient(int id) throws SQLException {
         List<Integer> idJointures = new ArrayList<>();
         String query = "SELECT idJointure FROM rdv WHERE idClient = ?";
