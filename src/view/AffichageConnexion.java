@@ -25,7 +25,7 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
     //Elements de la fenêtre de connexion
     private JLabel titre = new JLabel("CONNEXION", JLabel.CENTER) ;
     private JTextField entrerMail = new JTextField(50) ;
-    private JPasswordField entrerMdp = new JPasswordField(45);
+    private JPasswordField entrerMdp = new JPasswordField(50) ;
     private JButton boutton = new JButton("Entrer") ;
     private JButton pasDeCompteBoutton = new JButton("Je n'ai pas de compte") ;
     private JLabel mdpIncorrecte = new JLabel("", JLabel.CENTER) ;
@@ -81,20 +81,20 @@ public class AffichageConnexion extends JFrame implements WindowListener, Action
         JPanel panel3 = new JPanel(new FlowLayout());
 
         panel1.add(new JLabel("E-mail :"));
-        panel1.add(entrerMail);
+        panel1.add(this.entrerMail);
 
         panel2.add(new JLabel("Password :"));
-        panel2.add(entrerMdp);
+        panel2.add(this.entrerMdp);
 
         // Bouton pour démasquer le mot de passe
         JButton showPasswordButton = new JButton("Afficher");
         showPasswordButton.addActionListener(e -> {
-            System.out.println(entrerMdp.getEchoChar());
-            if (entrerMdp.getEchoChar() == '•') {
-                entrerMdp.setEchoChar((char) 0); // Afficher le texte brut
+            System.out.println(this.entrerMdp.getEchoChar());
+            if (this.entrerMdp.getEchoChar() == '•') {
+                this.entrerMdp.setEchoChar((char) 0); // Afficher le texte brut
                 showPasswordButton.setText("Masquer");
             } else {
-                entrerMdp.setEchoChar('•'); // Masquer le texte
+                this.entrerMdp.setEchoChar('•'); // Masquer le texte
                 showPasswordButton.setText("Afficher");
             }
 

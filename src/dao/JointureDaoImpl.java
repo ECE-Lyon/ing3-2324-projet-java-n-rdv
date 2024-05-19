@@ -65,4 +65,19 @@ public class JointureDaoImpl implements JointureDao {
             return ids ;
         }
     }
+    public List<Integer> getIdJointuresByIdClient(int id) throws SQLException {
+        List<Integer> idJointures = new ArrayList<>();
+        String query = "SELECT idJointure FROM rdv WHERE idClient = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                idJointures.add(resultSet.getInt("idJointure"));
+            }
+        }
+        return idJointures;
+    }
+
 }

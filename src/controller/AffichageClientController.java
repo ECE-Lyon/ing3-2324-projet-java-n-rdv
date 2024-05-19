@@ -65,6 +65,15 @@ public class AffichageClientController {
         }
     }
 
+    public List<Integer> getIdJointure(Connection connection, int client){
+        JointureDao dao = new JointureDaoImpl(connection);
+        try{
+            return dao.getIdJointuresByIdClient(this.client.getIdClient()) ;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getHeure(Connection connection){
         ClientDao dao =new ClientDaoImpl(connection);
         try{
@@ -163,5 +172,34 @@ public class AffichageClientController {
         }
     }
 
+    public int[] getIdMedecinCliniqueByIdJointure(Connection connection, int idJointure){
+        JointureDao dao = new JointureDaoImpl(connection) ;
+        int[] tabId = new int[2] ;
+        try {
+            tabId = dao.getMedecinByIdJointure(idJointure) ;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return tabId;
+    }
+
+    public Medecin getMedecinAndOneClinique(Connection connection, int[] tabId){
+        MedecinDao dao = new MedecinDaoImpl(connection) ;
+        Medecin med ;
+        try {
+            med = dao.getMedecinById(tabId[0]) ;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        for(int i = 0 ; i < med.getCliniques().size() ; i++) {
+            if(med.getCliniques().get(i).getIdClinique() == tabId[1]){
+                List<Clinique> list = new ArrayList<>() ;
+                list.add(med.getCliniques().get(i)) ;
+                med.setClinique(list);
+                break ;
+            }
+        }
+        return med ;
+    }
 
 }

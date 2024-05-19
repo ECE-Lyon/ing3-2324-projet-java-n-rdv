@@ -12,4 +12,5 @@ public interface JointureDao {
 
     public int[] getMedecinByIdJointure(int idJointure)  throws SQLException;
     public List<Integer> getIdJointures(int idMedecin, int idClinique) throws SQLException ;
+    public List<Integer> getIdJointuresByIdClient(int id) throws SQLException ;
 }

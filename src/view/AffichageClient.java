@@ -4,9 +4,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
 import com.github.lgooddatepicker.zinternaltools.DateChangeEvent;
 import controller.AffichageClientController;
-import model.Creneau;
-import model.Medecin;
-import model.MySql;
+import model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -205,9 +203,9 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         }
     }
 
-    public void fonctionRaph(){
-        //JButton buttonNote = new JButton("Note") ;
-        //ouvrir page note
+    public void fonctionRaph() {
+        // JButton buttonNote = new JButton("Note") ;
+        // ouvrir page note
         buttonNote.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -215,10 +213,33 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
                 buttonNote.setVisible(true);
             }
         });
-        //afficher heure
-        String heureMedecin =this.controller.getHeure(MySql.getConnection());
-        this.heure.setText(heureMedecin);
+
+        // afficher heure
+       // String heureMedecin = this.controller.getHeure(MySql.getConnection());
+       // this.heure.setText(heureMedecin);
+
+        // Afficher le nom du médecin à côté de l'heure
+        afficherNomMedecinPourRdv();
+
     }
+
+    public void afficherNomMedecinPourRdv() {
+        Client client = this.controller.getClientConnecte(MySql.getConnection());
+        int idClient = client.getIdClient();
+
+        List<Integer> idJointure = this.controller.getIdJointure(MySql.getConnection(), idClient);
+        for(int i=0 ; i < idJointure.size() ; i++){
+            int[] tabId = this.controller.getIdMedecinCliniqueByIdJointure(MySql.getConnection(), idJointure.get(i));
+            Medecin medecin = this.controller.getMedecinAndOneClinique(MySql.getConnection(), tabId);
+
+            // Affichage du nom du médecin à côté de l'heure
+            String nomMedecin = medecin.getNom() + " " + medecin.getPrenom();
+            String heureActuelle = this.heure.getText();
+            this.heure.setText(heureActuelle + " - Médecin : " + nomMedecin);
+        }
+
+    }
+
 
 
     @Override
