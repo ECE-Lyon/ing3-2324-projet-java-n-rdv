@@ -75,10 +75,6 @@ public class AffichageClientController {
             throw new RuntimeException(e);
         }
     }
-
-    public List<Integer> getidRDV(Connection connection){
-        RdvDao dao = new RdvDaoImpl(connection);
-
     public List<Integer> getIdJointure(Connection connection, int client){
         JointureDao dao = new JointureDaoImpl(connection);
         try{
@@ -88,17 +84,15 @@ public class AffichageClientController {
         }
     }
 
-    public String getHeure(Connection connection){
-        ClientDao dao =new ClientDaoImpl(connection);
-        try{
-            return dao.getIdRDV(this.client.getIdClient()) ;
-        }catch (SQLException e){
+
+    public List<Integer> getidRDV(Connection connection) {
+        RdvDao dao = new RdvDaoImpl(connection);
+        try {
+            return dao.getIdRDV(this.client.getIdClient());
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
-
-
 
 
     ///Avoir l'ensemble des rendez-vous libre pour qu'un client puisse prendre rdv ensuite

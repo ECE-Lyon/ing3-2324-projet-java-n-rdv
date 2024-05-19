@@ -97,6 +97,7 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         for(int i = 0 ; i < rdvList.size() ; i++){
             listNote = this.controller.getNote(MySql.getConnection(),rdvList.get(i));
             this.historiquePanel.add(createPanel(list.get(i), listNote.get(0)));
+            afficherNomMedecinPourRdv();
         }
         this.pack();
         this.setVisible(true);
@@ -240,25 +241,6 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
         }
     }
 
-    public void fonctionRaph() {
-        // JButton buttonNote = new JButton("Note") ;
-        // ouvrir page note
-        buttonNote.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ClientNote buttonNote = new ClientNote(controller);
-                buttonNote.setVisible(true);
-            }
-        });
-
-        // afficher heure
-       // String heureMedecin = this.controller.getHeure(MySql.getConnection());
-       // this.heure.setText(heureMedecin);
-
-        // Afficher le nom du médecin à côté de l'heure
-        afficherNomMedecinPourRdv();
-
-    }
 
     public void afficherNomMedecinPourRdv() {
         Client client = this.controller.getClientConnecte(MySql.getConnection());
@@ -271,8 +253,7 @@ public class AffichageClient extends JFrame implements ActionListener, DateChang
 
             // Affichage du nom du médecin à côté de l'heure
             String nomMedecin = medecin.getNom() + " " + medecin.getPrenom();
-            String heureActuelle = this.heure.getText();
-            this.heure.setText(heureActuelle + " - Médecin : " + nomMedecin);
+            //setText("Médecin : " + nomMedecin);
         }
 
     }
